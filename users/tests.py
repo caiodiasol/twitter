@@ -2,7 +2,7 @@ from django.test import TestCase
 from .models import User
 from rest_framework.test import APIClient
 from rest_framework import status
-
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class UserModelTest(TestCase):
     def setUp(self):
@@ -24,6 +24,9 @@ class UserAPITest(TestCase):
             email="testuser@example.com",
             password="password123"
         )
+        # Autenticar o usuário
+        refresh = RefreshToken.for_user(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
 
     def test_get_users(self):
         response = self.client.get('/api/users/')

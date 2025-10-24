@@ -40,11 +40,13 @@ INSTALLED_APPS = [
     'tweets',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -104,6 +106,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Configurações CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -126,7 +136,7 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",  # Adicionando JWT
     ],
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",  # Requer autenticação para todas as requisições
+        "rest_framework.permissions.AllowAny",  
     ],
 }
 
@@ -147,3 +157,5 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+AUTH_USER_MODEL = 'users.User'

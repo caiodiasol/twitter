@@ -6,6 +6,13 @@ FROM python:3.13-slim
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
 
+# Instalar dependências do sistema necessárias para PostgreSQL
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copia o arquivo de dependências do Poetry
 COPY pyproject.toml poetry.lock /app/
 
@@ -16,6 +23,11 @@ RUN pip install poetry && \
 
 # Copia todo o código do projeto para o contêiner
 COPY . /app/
+
+# Criar usuário não-root para segurança
+RUN adduser --disabled-password --gecos '' appuser && \
+    chown -R appuser:appuser /app
+USER appuser
 
 # Expõe a porta do Django
 EXPOSE 8000
