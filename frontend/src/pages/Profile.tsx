@@ -29,7 +29,7 @@ interface UserProfile {
 }
 
 const Profile: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -115,6 +115,7 @@ const Profile: React.FC = () => {
       });
 
       setProfile(response.data);
+      updateUser(response.data);
       setSuccess('Perfil atualizado com sucesso!');
     } catch (err: any) {
       if (err.response?.data) {

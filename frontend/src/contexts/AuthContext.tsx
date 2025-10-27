@@ -18,6 +18,7 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<boolean>;
   register: (userData: RegisterData) => Promise<boolean>;
   logout: () => void;
+  updateUser: (userData: User) => void;
 }
 
 interface RegisterData {
@@ -52,6 +53,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuth();
   }, []);
 
+
   const checkAuth = async (): Promise<void> => {
     console.log('AuthContext: Starting checkAuth');
     const token = localStorage.getItem('accessToken');
@@ -76,6 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     console.log('AuthContext: Setting loading to false');
     setLoading(false);
   };
+
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
@@ -130,6 +133,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsAuthenticated(false);
   };
 
+  const updateUser = (userData: User): void => {
+    setUser(userData);
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -138,6 +145,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       login,
       register,
       logout,
+      updateUser,
     }}>
       {children}
     </AuthContext.Provider>
