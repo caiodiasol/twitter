@@ -17,6 +17,7 @@ import Button from '../components/ui/Button';
 import Logo from '../components/ui/Logo';
 import Input from '../components/ui/Input';
 import api from '../services/api';
+import { getAvatarUrl } from '../utils/avatar';
 
 interface UserProfile {
   id: number;
@@ -61,7 +62,7 @@ const Profile: React.FC = () => {
         email: userData.email || '',
       });
       if (userData.avatar) {
-        setAvatarPreview(userData.avatar);
+        setAvatarPreview(getAvatarUrl(userData.avatar) || '');
       }
     } catch (err) {
       setError('Erro ao carregar perfil');
@@ -198,13 +199,21 @@ const Profile: React.FC = () => {
       {/* User Info & Logout */}
       <div className="border-t border-gray-200 pt-4">
         <div className="flex items-center space-x-3 mb-4">
-          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-            <span className="text-gray-600 font-medium text-sm">
-              {user?.username?.charAt(0).toUpperCase()}
-            </span>
+          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+            {getAvatarUrl(user?.avatar) ? (
+              <img 
+                src={getAvatarUrl(user?.avatar)!} 
+                alt="Avatar" 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-gray-600 font-medium text-sm">
+                {user?.username?.charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-900">{user?.username}</p>
+            <p className="text-sm font-medium text-gray-900">{user?.first_name} {user?.last_name}</p>
             <p className="text-xs text-gray-500">@{user?.username}</p>
           </div>
         </div>

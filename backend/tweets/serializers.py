@@ -4,10 +4,10 @@ from users.serializers import UserSerializer
 
 class TweetSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
-
+    
     class Meta:
         model = Tweet
-        fields = ['id', 'content', 'timestamp', 'likes', 'retweets', 'replies', 'author']
+        fields = ['id', 'content', 'image', 'location', 'timestamp', 'likes', 'retweets', 'replies', 'author']
         read_only_fields = ['id', 'timestamp', 'likes', 'retweets', 'replies', 'author']
 
 class TweetCommentSerializer(serializers.ModelSerializer):

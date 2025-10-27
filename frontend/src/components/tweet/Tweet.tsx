@@ -1,11 +1,13 @@
-// Tweet.tsx - Correção para o erro
 import React from 'react';
-import { Heart, MessageCircle, Repeat2, Share } from 'lucide-react';
+import { Heart, MessageCircle, Repeat2, Share, MapPin } from 'lucide-react';
+import { getAvatarUrl } from '../../utils/avatar';
 
 interface TweetProps {
   id: number;
   content: string;
-  author?: {  // ✅ Tornar author opcional
+  image?: string;
+  location?: string;
+  author?: {
     id: number;
     username: string;
     first_name: string;
@@ -19,12 +21,14 @@ interface TweetProps {
   onLike?: (id: number) => void;
   onRetweet?: (id: number) => void;
   onReply?: (id: number) => void;
+  onShare?: (id: number) => void;
 }
 
-// Tweet.tsx - Atualizar para mostrar avatar do autor
 const Tweet: React.FC<TweetProps> = ({
   id,
   content,
+  image,
+  location,
   author,
   timestamp,
   likes,
@@ -32,7 +36,8 @@ const Tweet: React.FC<TweetProps> = ({
   replies,
   onLike,
   onRetweet,
-  onReply
+  onReply,
+  onShare
 }) => {
   return (
     <div className="border-b border-gray-200 p-4 hover:bg-gray-50 transition-colors">
@@ -40,9 +45,9 @@ const Tweet: React.FC<TweetProps> = ({
         {/* Avatar */}
         <div className="flex-shrink-0">
           <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
-            {author?.avatar ? (
+            {getAvatarUrl(author?.avatar) ? (
               <img 
-                src={author.avatar} 
+                src={getAvatarUrl(author?.avatar)!} 
                 alt="Avatar" 
                 className="w-full h-full object-cover"
               />
@@ -70,9 +75,61 @@ const Tweet: React.FC<TweetProps> = ({
           
           <p className="mt-1 text-gray-900">{content}</p>
           
+          {/* Image */}
+          {image && (
+            <div className="mt-3">
+              <img 
+                src={getAvatarUrl(image) || image} 
+                alt="Tweet image" 
+                className="w-full max-w-md rounded-lg object-cover"
+              />
+            </div>
+          )}
+          
+          {/* Location */}
+          {location && (
+            <div className="mt-2 flex items-center text-gray-500 text-sm">
+              <MapPin className="h-4 w-4 mr-1" />
+              <span>{location}</span>
+            </div>
+          )}
+          
           {/* Actions */}
           <div className="mt-3 flex items-center space-x-6 text-gray-500">
-            {/* ... botões de ação ... */}
+            {/* Comments */}
+            <button 
+              onClick={() => onReply?.(id)}
+              className="flex items-center space-x-2 hover:text-blue-500 transition-colors group px-2 py-1 rounded-full hover:bg-blue-50"
+            >
+              <MessageCircle className="h-5 w-5" />
+              <span className="text-sm font-medium">{replies}</span>
+            </button>
+            
+            {/* Retweet */}
+            <button 
+              onClick={() => onRetweet?.(id)}
+              className="flex items-center space-x-2 hover:text-green-500 transition-colors group px-2 py-1 rounded-full hover:bg-green-50"
+            >
+              <Repeat2 className="h-5 w-5" />
+              <span className="text-sm font-medium">{retweets}</span>
+            </button>
+            
+            {/* Like */}
+            <button 
+              onClick={() => onLike?.(id)}
+              className="flex items-center space-x-2 hover:text-red-500 transition-colors group px-2 py-1 rounded-full hover:bg-red-50"
+            >
+              <Heart className="h-5 w-5" />
+              <span className="text-sm font-medium">{likes}</span>
+            </button>
+            
+            {/* Share */}
+            <button 
+              onClick={() => onShare?.(id)}
+              className="flex items-center space-x-2 hover:text-blue-500 transition-colors group px-2 py-1 rounded-full hover:bg-blue-50"
+            >
+              <Share className="h-5 w-5" />
+            </button>
           </div>
         </div>
       </div>

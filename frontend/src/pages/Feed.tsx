@@ -7,18 +7,21 @@ import {
   Bell, 
   Mail, 
   User, 
-  LogOut,
-  Plus
+  LogOut
 } from 'lucide-react';
 import Layout from '../components/ui/Layout';
 import Button from '../components/ui/Button';
 import Logo from '../components/ui/Logo';
+import TweetComposer from '../components/tweet/TweetComposer';
 import TweetList from '../components/tweet/TweetList';
 import api from '../services/api';
+import { getAvatarUrl } from '../utils/avatar';
 
 interface Tweet {
   id: number;
   content: string;
+  image?: string;
+  location?: string;
   timestamp: string;
   likes: number;
   retweets: number;
@@ -36,7 +39,6 @@ const Feed: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [tweets, setTweets] = useState<Tweet[]>([]);
-  const [newTweet, setNewTweet] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
@@ -56,17 +58,70 @@ const Feed: React.FC = () => {
     }
   };
 
-  const handleCreateTweet = async (): Promise<void> => {
-    if (!newTweet.trim()) return;
-
+  const handleCreateTweet = async (data: { content: string; image?: File; location?: string }): Promise<void> => {
     try {
-      const response = await api.post('/tweets/', { content: newTweet });
+      const formData = new FormData();
+      formData.append('content', data.content);
+      
+      if (data.image) {
+        formData.append('image', data.image);
+      }
+      
+      if (data.location) {
+        formData.append('location', data.location);
+      }
+
+      const response = await api.post('/tweets/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
       setTweets([response.data, ...tweets]);
-      setNewTweet('');
     } catch (err) {
       setError('Erro ao criar tweet');
       console.error('Failed to create tweet:', err);
     }
+  };
+
+  const handleLike = async (tweetId: number): Promise<void> => {
+    try {
+      await api.post(`/tweets/${tweetId}/like/`);
+      // Atualizar contador local
+      setTweets(tweets.map(tweet => 
+        tweet.id === tweetId 
+          ? { ...tweet, likes: tweet.likes + 1 }
+          : tweet
+      ));
+    } catch (err) {
+      console.error('Failed to like tweet:', err);
+    }
+  };
+
+  const handleRetweet = async (tweetId: number): Promise<void> => {
+    try {
+      await api.post(`/tweets/${tweetId}/retweet/`);
+      // Atualizar contador local
+      setTweets(tweets.map(tweet => 
+        tweet.id === tweetId 
+          ? { ...tweet, retweets: tweet.retweets + 1 }
+          : tweet
+      ));
+    } catch (err) {
+      console.error('Failed to retweet:', err);
+    }
+  };
+
+  const handleReply = (tweetId: number): void => {
+    // Implementar modal de resposta
+    console.log('Reply to tweet:', tweetId);
+  };
+
+  const handleShare = (tweetId: number): void => {
+    // Implementar compartilhamento
+    const tweetUrl = `${window.location.origin}/tweet/${tweetId}`;
+    navigator.clipboard.writeText(tweetUrl);
+    console.log('Tweet shared:', tweetUrl);
   };
 
   const handleLogout = (): void => {
@@ -134,9 +189,9 @@ const Sidebar = () => (
     <div className="border-t border-gray-200 pt-4">
       <div className="flex items-center space-x-3 mb-4">
         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
-          {user?.avatar ? (
+          {getAvatarUrl(user?.avatar) ? (
             <img 
-              src={user.avatar} 
+              src={getAvatarUrl(user?.avatar)!} 
               alt="Avatar" 
               className="w-full h-full object-cover"
             />
@@ -175,37 +230,35 @@ const Sidebar = () => (
   return (
     <Layout sidebar={<Sidebar />}>
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 p-4">
-          <h1 className="text-xl font-bold text-gray-900">Home</h1>
-        </div>
+            {/* Header */}
+            <div className="bg-white border-b border-gray-200 p-4">
+              <h1 className="text-xl font-bold text-gray-900">Home</h1>
+            </div>
 
-        {/* Tweet Composer */}
-        <div className="bg-white border-b border-gray-200 p-4">
-          <textarea
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-            rows={3}
-            placeholder="O que está acontecendo?"
-            value={newTweet}
-            onChange={(e) => setNewTweet(e.target.value)}
-          />
-          <div className="flex justify-end mt-3">
-            <Button onClick={handleCreateTweet}>
-              <Plus className="mr-2 h-4 w-4" />
-              Tweet
-            </Button>
-          </div>
-        </div>
+            {/* Tweet Composer */}
+            {user && (
+              <TweetComposer
+                user={user}
+                onSubmit={handleCreateTweet}
+                loading={loading}
+              />
+            )}
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 m-4 rounded">
-            {error}
-          </div>
-        )}
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 m-4 rounded">
+                {error}
+              </div>
+            )}
 
-        {/* Tweets */}
-        <TweetList tweets={tweets} />
+            {/* Tweets */}
+            <TweetList 
+              tweets={tweets} 
+              onLike={handleLike}
+              onRetweet={handleRetweet}
+              onReply={handleReply}
+              onShare={handleShare}
+            />
       </div>
     </Layout>
   );

@@ -5,7 +5,9 @@ import Tweet from './Tweet';
 interface TweetData {
   id: number;
   content: string;
-  author?: {  // ✅ Tornar author opcional
+  image?: string;
+  location?: string;
+  author?: {
     id: number;
     username: string;
     avatar?: string;
@@ -23,9 +25,10 @@ interface TweetListProps {
   onLike?: (id: number) => void;
   onRetweet?: (id: number) => void;
   onReply?: (id: number) => void;
+  onShare?: (id: number) => void;
 }
 
-const TweetList: React.FC<TweetListProps> = ({ tweets, onLike, onRetweet, onReply }) => {
+const TweetList: React.FC<TweetListProps> = ({ tweets, onLike, onRetweet, onReply, onShare }) => {
   if (tweets.length === 0) {
     return (
       <div className="text-center py-8">
@@ -44,6 +47,7 @@ const TweetList: React.FC<TweetListProps> = ({ tweets, onLike, onRetweet, onRepl
           onLike={onLike}
           onRetweet={onRetweet}
           onReply={onReply}
+          onShare={onShare}
         />
       ))}
     </div>
