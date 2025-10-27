@@ -30,12 +30,19 @@ const SignIn: React.FC = () => {
     setError('');
     setLoading(true);
 
+    // Validação básica
+    if (!formData.username || !formData.password) {
+      setError('Por favor, preencha todos os campos.');
+      setLoading(false);
+      return;
+    }
+
     const success = await login(formData.username, formData.password);
     
     if (success) {
       navigate('/');
     } else {
-      setError('Credenciais inválidas. Tente novamente.');
+      setError('Credenciais inválidas. Verifique seu usuário e senha.');
     }
     
     setLoading(false);

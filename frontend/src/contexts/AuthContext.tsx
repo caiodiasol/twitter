@@ -53,17 +53,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const checkAuth = async (): Promise<void> => {
+    console.log('AuthContext: Starting checkAuth');
     const token = localStorage.getItem('accessToken');
+    console.log('AuthContext: Token found:', !!token);
+    
     if (token) {
       try {
+        console.log('AuthContext: Validating token with /users/me/');
         const response = await api.get('/users/me/');
+        console.log('AuthContext: Token valid, user data:', response.data);
         setUser(response.data);
         setIsAuthenticated(true);
       } catch (error) {
+        console.log('AuthContext: Token invalid, clearing storage');
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
       }
+    } else {
+      console.log('AuthContext: No token found');
     }
+    
+    console.log('AuthContext: Setting loading to false');
     setLoading(false);
   };
 
@@ -74,21 +84,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       localStorage.setItem('accessToken', access);
       localStorage.setItem('refreshToken', refresh);
+      api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
       setUser(userData);
       setIsAuthenticated(true);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
+      if (error.response?.data) {
+        console.error('Error details:', error.response.data);
+      }
       return false;
     }
   };
 
   const register = async (userData: RegisterData): Promise<boolean> => {
     try {
-      await api.post('/users/register/', userData);
+      console.log('AuthContext: Starting registration with data:', userData);
+      const response = await api.post('/users/register/', userData);
+      console.log('AuthContext: Registration response:', response.data);
+      
+      const { access, refresh, user: newUser } = response.data;
+      
+      console.log('AuthContext: Setting tokens and user data');
+      localStorage.setItem('accessToken', access);
+      localStorage.setItem('refreshToken', refresh);
+      api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+      setUser(newUser);
+      setIsAuthenticated(true);
+      
+      console.log('AuthContext: Registration successful, user authenticated');
       return true;
-    } catch (error) {
-      console.error('Registration failed:', error);
+    } catch (error: any) {
+      console.error('AuthContext: Registration failed:', error);
+      if (error.response?.data) {
+        console.error('AuthContext: Error details:', error.response.data);
+      }
       return false;
     }
   };
