@@ -14,6 +14,7 @@ import Button from '../components/ui/Button';
 import Logo from '../components/ui/Logo';
 import TweetComposer from '../components/tweet/TweetComposer';
 import TweetList from '../components/tweet/TweetList';
+import SuggestedUsers from '../components/ui/SuggestedUsers';
 import api from '../services/api';
 import { getAvatarUrl } from '../utils/avatar';
 
@@ -48,7 +49,7 @@ const Feed: React.FC = () => {
 
   const fetchTweets = async (): Promise<void> => {
     try {
-      const response = await api.get('/tweets/');
+      const response = await api.get('/tweets/feed/');
       setTweets(response.data);
     } catch (err) {
       setError('Erro ao carregar tweets');
@@ -124,12 +125,20 @@ const Feed: React.FC = () => {
     console.log('Tweet shared:', tweetUrl);
   };
 
+  const handleCommentAdded = (tweetId: number): void => {
+    // Atualizar o contador de replies do tweet específico
+    setTweets(tweets.map(tweet =>
+      tweet.id === tweetId
+        ? { ...tweet, replies: tweet.replies + 1 }
+        : tweet
+    ));
+  };
+
   const handleLogout = (): void => {
     logout();
     navigate('/signin');
   };
 
-// Feed.tsx - Sidebar completo corrigido
 const Sidebar = () => (
   <div className="flex flex-col h-full p-4">
     {/* Logo */}
@@ -229,36 +238,60 @@ const Sidebar = () => (
 
   return (
     <Layout sidebar={<Sidebar />}>
-      <div className="max-w-2xl mx-auto">
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200 p-4">
-              <h1 className="text-xl font-bold text-gray-900">Home</h1>
-            </div>
+      <div className="max-w-4xl mx-auto flex">
+        {/* Main Content */}
+        <div className="flex-1 max-w-2xl">
+          {/* Header */}
+          <div className="bg-white border-b border-gray-200 p-4">
+            <h1 className="text-xl font-bold text-gray-900">Home</h1>
+          </div>
 
-            {/* Tweet Composer */}
-            {user && (
-              <TweetComposer
-                user={user}
-                onSubmit={handleCreateTweet}
-                loading={loading}
-              />
-            )}
-
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 m-4 rounded">
-                {error}
-              </div>
-            )}
-
-            {/* Tweets */}
-            <TweetList 
-              tweets={tweets} 
-              onLike={handleLike}
-              onRetweet={handleRetweet}
-              onReply={handleReply}
-              onShare={handleShare}
+          {/* Tweet Composer */}
+          {user && (
+            <TweetComposer
+              user={user}
+              onSubmit={handleCreateTweet}
+              loading={loading}
             />
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 m-4 rounded">
+              {error}
+            </div>
+          )}
+
+          {/* Tweets */}
+          <TweetList
+            tweets={tweets}
+            onLike={handleLike}
+            onRetweet={handleRetweet}
+            onReply={handleReply}
+            onShare={handleShare}
+            currentUser={user || undefined}
+            onCommentAdded={handleCommentAdded}
+          />
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="w-80 ml-6 space-y-4">
+          {/* Suggested Users */}
+          {user && (
+            <SuggestedUsers currentUserId={user.id} />
+          )}
+          
+          {/* Trending Topics (placeholder) */}
+          <div className="bg-white rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Assuntos do momento</h3>
+            <div className="space-y-2">
+              <div className="text-sm text-gray-600">#tecnologia</div>
+              <div className="text-sm text-gray-600">#programação</div>
+              <div className="text-sm text-gray-600">#django</div>
+              <div className="text-sm text-gray-600">#react</div>
+            </div>
+          </div>
+        </div>
       </div>
     </Layout>
   );

@@ -96,3 +96,16 @@ class UserViewSet(ModelViewSet):
         users = [f.user for f in followers]
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])
+    def stats(self, request, pk=None):
+        user = self.get_object()
+        tweets_count = user.tweets.count()
+        following_count = UserFollowing.objects.filter(user=user).count()
+        followers_count = UserFollowing.objects.filter(following_user=user).count()
+        
+        return Response({
+            'tweets_count': tweets_count,
+            'following_count': following_count,
+            'followers_count': followers_count
+        })

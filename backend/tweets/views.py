@@ -18,7 +18,10 @@ class TweetViewSet(viewsets.ModelViewSet):
         following = UserFollowing.objects.filter(user=request.user)
         following_users = [f.following_user for f in following]
         
-        tweets = Tweet.objects.filter(author__in=following_users).order_by('-timestamp')
+        # Incluir o próprio usuário logado + usuários seguidos
+        all_users = following_users + [request.user]
+        
+        tweets = Tweet.objects.filter(author__in=all_users).order_by('-timestamp')
         serializer = TweetSerializer(tweets, many=True)
         return Response(serializer.data)
     
@@ -54,6 +57,9 @@ class TweetViewSet(viewsets.ModelViewSet):
         serializer = TweetCommentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(author=request.user, tweet=tweet)
+            # Atualizar contador de replies
+            tweet.replies += 1
+            tweet.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
