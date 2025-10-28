@@ -36,7 +36,15 @@ interface TweetListProps {
   onCommentAdded?: (tweetId: number) => void;
 }
 
-const TweetList: React.FC<TweetListProps> = ({ tweets, onLike, onRetweet, onReply, onShare, currentUser, onCommentAdded }) => {
+const TweetList: React.FC<TweetListProps> = ({
+  tweets,
+  onLike,
+  onRetweet,
+  onReply,
+  onShare,
+  currentUser,
+  onCommentAdded,
+}) => {
   if (tweets.length === 0) {
     return (
       <div className="text-center py-8">
@@ -48,17 +56,17 @@ const TweetList: React.FC<TweetListProps> = ({ tweets, onLike, onRetweet, onRepl
 
   return (
     <div className="divide-y divide-gray-200">
-      {tweets.map((tweet) => (
-            <Tweet
-              key={tweet.id}
-              {...tweet}
-              onLike={onLike}
-              onRetweet={onRetweet}
-              onReply={onReply}
-              onShare={onShare}
-              currentUser={currentUser}
-              onCommentAdded={onCommentAdded}
-            />
+      {tweets.map(tweet => (
+        <Tweet
+          key={tweet.id}
+          {...tweet}
+          onLike={onLike}
+          onRetweet={onRetweet}
+          onReply={onReply}
+          onShare={onShare}
+          currentUser={currentUser}
+          onCommentAdded={onCommentAdded}
+        />
       ))}
     </div>
   );

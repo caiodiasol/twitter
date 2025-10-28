@@ -1,16 +1,16 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Home, 
-  Search, 
-  Bell, 
-  Mail, 
-  User, 
+import {
+  Home,
+  Search,
+  Bell,
+  Mail,
+  User,
   LogOut,
   Camera,
   Save,
-  ArrowLeft
+  ArrowLeft,
 } from 'lucide-react';
 import Layout from '../components/ui/Layout';
 import Button from '../components/ui/Button';
@@ -89,11 +89,13 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -101,7 +103,7 @@ const Profile: React.FC = () => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = event => {
         setAvatarPreview(event.target?.result as string);
       };
       reader.readAsDataURL(file);
@@ -176,39 +178,41 @@ const Profile: React.FC = () => {
         >
           Home
         </Button>
-        
+
         <Button
           variant="outline"
           className="w-full justify-start"
           icon={Search}
-          onClick={() => {/* Navigate to explore */}}
+          onClick={() => {
+            /* Navigate to explore */
+          }}
         >
           Explore
         </Button>
-        
+
         <Button
           variant="outline"
           className="w-full justify-start"
           icon={Bell}
-          onClick={() => {/* Navigate to notifications */}}
+          onClick={() => {
+            /* Navigate to notifications */
+          }}
         >
           Notifications
         </Button>
-        
+
         <Button
           variant="outline"
           className="w-full justify-start"
           icon={Mail}
-          onClick={() => {/* Navigate to messages */}}
+          onClick={() => {
+            /* Navigate to messages */
+          }}
         >
           Messages
         </Button>
-        
-        <Button
-          variant="primary"
-          className="w-full justify-start"
-          icon={User}
-        >
+
+        <Button variant="primary" className="w-full justify-start" icon={User}>
           Profile
         </Button>
       </nav>
@@ -218,9 +222,9 @@ const Profile: React.FC = () => {
         <div className="flex items-center space-x-3 mb-4">
           <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
             {getAvatarUrl(user?.avatar) ? (
-              <img 
-                src={getAvatarUrl(user?.avatar)!} 
-                alt="Avatar" 
+              <img
+                src={getAvatarUrl(user?.avatar)!}
+                alt="Avatar"
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -230,11 +234,13 @@ const Profile: React.FC = () => {
             )}
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-900">{user?.first_name} {user?.last_name}</p>
+            <p className="text-sm font-medium text-gray-900">
+              {user?.first_name} {user?.last_name}
+            </p>
             <p className="text-xs text-gray-500">@{user?.username}</p>
           </div>
         </div>
-        
+
         <Button
           variant="outline"
           className="w-full justify-start"
@@ -280,9 +286,9 @@ const Profile: React.FC = () => {
               <div className="relative">
                 <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
                   {avatarPreview ? (
-                    <img 
-                      src={avatarPreview} 
-                      alt="Avatar" 
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -291,7 +297,7 @@ const Profile: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <label 
+                <label
                   htmlFor="avatar"
                   className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-2 cursor-pointer hover:bg-blue-600 transition-colors"
                 >
@@ -318,15 +324,21 @@ const Profile: React.FC = () => {
               <div className="border-t border-gray-200 pt-6">
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900">{stats.tweets_count}</div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      {stats.tweets_count}
+                    </div>
                     <div className="text-sm text-gray-500">Tweets</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900">{stats.following_count}</div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      {stats.following_count}
+                    </div>
                     <div className="text-sm text-gray-500">Seguindo</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900">{stats.followers_count}</div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      {stats.followers_count}
+                    </div>
                     <div className="text-sm text-gray-500">Seguidores</div>
                   </div>
                 </div>
@@ -342,7 +354,7 @@ const Profile: React.FC = () => {
                 onChange={handleInputChange}
                 placeholder="Seu nome"
               />
-              
+
               <Input
                 label="Sobrenome"
                 name="last_name"
@@ -395,11 +407,7 @@ const Profile: React.FC = () => {
 
             {/* Submit Button */}
             <div className="flex justify-end">
-              <Button
-                onClick={handleSubmit}
-                disabled={saving}
-                icon={Save}
-              >
+              <Button onClick={handleSubmit} disabled={saving} icon={Save}>
                 {saving ? 'Salvando...' : 'Salvar Alterações'}
               </Button>
             </div>

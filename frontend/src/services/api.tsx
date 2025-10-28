@@ -1,4 +1,9 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import axios, {
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+  AxiosResponse,
+  AxiosError,
+} from 'axios';
 
 const API_BASE_URL = 'http://localhost:8001/api';
 
@@ -25,18 +30,23 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-    
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
+
       const refreshToken = localStorage.getItem('refreshToken');
       if (refreshToken) {
         try {
-          const response = await axios.post(`${API_BASE_URL}/users/token/refresh/`, {
-            refresh: refreshToken,
-          });
-          
+          const response = await axios.post(
+            `${API_BASE_URL}/users/token/refresh/`,
+            {
+              refresh: refreshToken,
+            }
+          );
+
           localStorage.setItem('accessToken', response.data.access);
           if (originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${response.data.access}`;

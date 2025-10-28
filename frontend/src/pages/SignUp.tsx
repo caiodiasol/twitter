@@ -23,7 +23,7 @@ const SignUp: React.FC = () => {
   });
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  
+
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -49,7 +49,13 @@ const SignUp: React.FC = () => {
     }
 
     // Validação de campos obrigatórios
-    if (!formData.username || !formData.email || !formData.password || !formData.first_name || !formData.last_name) {
+    if (
+      !formData.username ||
+      !formData.email ||
+      !formData.password ||
+      !formData.first_name ||
+      !formData.last_name
+    ) {
       setError('Todos os campos são obrigatórios.');
       setLoading(false);
       return;
@@ -73,15 +79,15 @@ const SignUp: React.FC = () => {
     console.log('Sending user data:', userData); // Debug
 
     const success = await register(userData);
-    
+
     console.log('Registration success:', success); // Debug
-    
+
     if (success) {
       navigate('/');
     } else {
       setError('Erro ao criar conta. Verifique os dados e tente novamente.');
     }
-    
+
     setLoading(false);
   };
 
@@ -93,7 +99,7 @@ const SignUp: React.FC = () => {
           <div className="flex justify-center mb-6">
             <Logo size={48} />
           </div>
-          
+
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Crie sua conta
           </h2>
@@ -107,12 +113,15 @@ const SignUp: React.FC = () => {
             </Link>
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="first_name"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Nome
                 </label>
                 <input
@@ -126,9 +135,12 @@ const SignUp: React.FC = () => {
                   onChange={handleChange}
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="last_name"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Sobrenome
                 </label>
                 <input
@@ -143,9 +155,12 @@ const SignUp: React.FC = () => {
                 />
               </div>
             </div>
-            
+
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Nome de usuário
               </label>
               <input
@@ -159,9 +174,12 @@ const SignUp: React.FC = () => {
                 onChange={handleChange}
               />
             </div>
-            
+
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email
               </label>
               <input
@@ -175,9 +193,12 @@ const SignUp: React.FC = () => {
                 onChange={handleChange}
               />
             </div>
-            
+
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Senha
               </label>
               <input
@@ -191,9 +212,12 @@ const SignUp: React.FC = () => {
                 onChange={handleChange}
               />
             </div>
-            
+
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Confirmar Senha
               </label>
               <input
@@ -202,17 +226,21 @@ const SignUp: React.FC = () => {
                 type="password"
                 required
                 className={`mt-1 appearance-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-                  formData.confirmPassword && formData.password !== formData.confirmPassword 
-                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                  formData.confirmPassword &&
+                  formData.password !== formData.confirmPassword
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
                     : 'border-gray-300'
                 }`}
                 placeholder="Confirme sua senha"
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
-              {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">As senhas não coincidem</p>
-              )}
+              {formData.confirmPassword &&
+                formData.password !== formData.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-600">
+                    As senhas não coincidem
+                  </p>
+                )}
             </div>
           </div>
 

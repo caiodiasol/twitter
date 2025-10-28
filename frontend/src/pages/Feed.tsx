@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Home, 
-  Search, 
-  Bell, 
-  Mail, 
-  User, 
-  LogOut
-} from 'lucide-react';
+import { Home, Search, Bell, Mail, User, LogOut } from 'lucide-react';
 import Layout from '../components/ui/Layout';
 import Button from '../components/ui/Button';
 import Logo from '../components/ui/Logo';
@@ -59,15 +52,19 @@ const Feed: React.FC = () => {
     }
   };
 
-  const handleCreateTweet = async (data: { content: string; image?: File; location?: string }): Promise<void> => {
+  const handleCreateTweet = async (data: {
+    content: string;
+    image?: File;
+    location?: string;
+  }): Promise<void> => {
     try {
       const formData = new FormData();
       formData.append('content', data.content);
-      
+
       if (data.image) {
         formData.append('image', data.image);
       }
-      
+
       if (data.location) {
         formData.append('location', data.location);
       }
@@ -77,7 +74,7 @@ const Feed: React.FC = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
+
       setTweets([response.data, ...tweets]);
     } catch (err) {
       setError('Erro ao criar tweet');
@@ -89,11 +86,11 @@ const Feed: React.FC = () => {
     try {
       await api.post(`/tweets/${tweetId}/like/`);
       // Atualizar contador local
-      setTweets(tweets.map(tweet => 
-        tweet.id === tweetId 
-          ? { ...tweet, likes: tweet.likes + 1 }
-          : tweet
-      ));
+      setTweets(
+        tweets.map(tweet =>
+          tweet.id === tweetId ? { ...tweet, likes: tweet.likes + 1 } : tweet
+        )
+      );
     } catch (err) {
       console.error('Failed to like tweet:', err);
     }
@@ -103,11 +100,13 @@ const Feed: React.FC = () => {
     try {
       await api.post(`/tweets/${tweetId}/retweet/`);
       // Atualizar contador local
-      setTweets(tweets.map(tweet => 
-        tweet.id === tweetId 
-          ? { ...tweet, retweets: tweet.retweets + 1 }
-          : tweet
-      ));
+      setTweets(
+        tweets.map(tweet =>
+          tweet.id === tweetId
+            ? { ...tweet, retweets: tweet.retweets + 1 }
+            : tweet
+        )
+      );
     } catch (err) {
       console.error('Failed to retweet:', err);
     }
@@ -131,11 +130,11 @@ const Feed: React.FC = () => {
 
   const handleCommentAdded = (tweetId: number): void => {
     // Atualizar o contador de replies do tweet específico
-    setTweets(tweets.map(tweet =>
-      tweet.id === tweetId
-        ? { ...tweet, replies: tweet.replies + 1 }
-        : tweet
-    ));
+    setTweets(
+      tweets.map(tweet =>
+        tweet.id === tweetId ? { ...tweet, replies: tweet.replies + 1 } : tweet
+      )
+    );
   };
 
   const handleLogout = (): void => {
@@ -143,94 +142,98 @@ const Feed: React.FC = () => {
     navigate('/signin');
   };
 
-const Sidebar = () => (
-  <div className="flex flex-col h-full p-4">
-    {/* Logo */}
-    <div className="flex items-center space-x-2 mb-8">
-      <Logo size={32} />
-      <span className="text-xl font-bold text-gray-900">Twitter</span>
-    </div>
-
-    {/* Navigation */}
-    <nav className="flex-1 space-y-2">
-      <Button
-        variant="primary"
-        className="w-full justify-start"
-        icon={Home}
-      >
-        Home
-      </Button>
-      
-      <Button
-        variant="outline"
-        className="w-full justify-start"
-        icon={Search}
-        onClick={() => {/* Navigate to explore */}}
-      >
-        Explore
-      </Button>
-      
-      <Button
-        variant="outline"
-        className="w-full justify-start"
-        icon={Bell}
-        onClick={() => {/* Navigate to notifications */}}
-      >
-        Notifications
-      </Button>
-      
-      <Button
-        variant="outline"
-        className="w-full justify-start"
-        icon={Mail}
-        onClick={() => {/* Navigate to messages */}}
-      >
-        Messages
-      </Button>
-      
-      <Button
-        variant="outline"
-        className="w-full justify-start"
-        icon={User}
-        onClick={() => navigate('/profile')}
-      >
-        Profile
-      </Button>
-    </nav>
-
-    {/* User Info & Logout */}
-    <div className="border-t border-gray-200 pt-4">
-      <div className="flex items-center space-x-3 mb-4">
-        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
-          {getAvatarUrl(user?.avatar) ? (
-            <img 
-              src={getAvatarUrl(user?.avatar)!} 
-              alt="Avatar" 
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-gray-600 font-medium text-sm">
-              {user?.username?.charAt(0).toUpperCase()}
-            </span>
-          )}
-        </div>
-        <div>
-          <p className="text-sm font-medium text-gray-900">{user?.first_name} {user?.last_name}</p>
-          <p className="text-xs text-gray-500">@{user?.username}</p>
-        </div>
+  const Sidebar = () => (
+    <div className="flex flex-col h-full p-4">
+      {/* Logo */}
+      <div className="flex items-center space-x-2 mb-8">
+        <Logo size={32} />
+        <span className="text-xl font-bold text-gray-900">Twitter</span>
       </div>
-      
-      <Button
-        variant="outline"
-        className="w-full justify-start"
-        icon={LogOut}
-        onClick={handleLogout}
-      >
-        Logout
-      </Button>
+
+      {/* Navigation */}
+      <nav className="flex-1 space-y-2">
+        <Button variant="primary" className="w-full justify-start" icon={Home}>
+          Home
+        </Button>
+
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          icon={Search}
+          onClick={() => {
+            /* Navigate to explore */
+          }}
+        >
+          Explore
+        </Button>
+
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          icon={Bell}
+          onClick={() => {
+            /* Navigate to notifications */
+          }}
+        >
+          Notifications
+        </Button>
+
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          icon={Mail}
+          onClick={() => {
+            /* Navigate to messages */
+          }}
+        >
+          Messages
+        </Button>
+
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          icon={User}
+          onClick={() => navigate('/profile')}
+        >
+          Profile
+        </Button>
+      </nav>
+
+      {/* User Info & Logout */}
+      <div className="border-t border-gray-200 pt-4">
+        <div className="flex items-center space-x-3 mb-4">
+          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+            {getAvatarUrl(user?.avatar) ? (
+              <img
+                src={getAvatarUrl(user?.avatar)!}
+                alt="Avatar"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-gray-600 font-medium text-sm">
+                {user?.username?.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-900">
+              {user?.first_name} {user?.last_name}
+            </p>
+            <p className="text-xs text-gray-500">@{user?.username}</p>
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          icon={LogOut}
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
+      </div>
     </div>
-  </div>
-);
+  );
 
   if (loading) {
     return (
@@ -281,13 +284,13 @@ const Sidebar = () => (
         {/* Right Sidebar */}
         <div className="w-80 ml-6 space-y-4">
           {/* Suggested Users */}
-          {user && (
-            <SuggestedUsers onUserClick={handleUserClick} />
-          )}
-          
+          {user && <SuggestedUsers onUserClick={handleUserClick} />}
+
           {/* Trending Topics (placeholder) */}
           <div className="bg-white rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Assuntos do momento</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Assuntos do momento
+            </h3>
             <div className="space-y-2">
               <div className="text-sm text-gray-600">#tecnologia</div>
               <div className="text-sm text-gray-600">#programação</div>

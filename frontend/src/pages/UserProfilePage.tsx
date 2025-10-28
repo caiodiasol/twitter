@@ -44,7 +44,7 @@ const UserProfilePage: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
-  
+
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -64,7 +64,7 @@ const UserProfilePage: React.FC = () => {
       setLoading(true);
       const response = await api.get(`/users/${userId}/`);
       setProfile(response.data);
-      
+
       // Verificar se o usuário atual está seguindo este usuário
       if (currentUser?.id !== response.data.id) {
         checkFollowingStatus(response.data.id);
@@ -101,12 +101,16 @@ const UserProfilePage: React.FC = () => {
 
   const handleFollow = async () => {
     if (!profile) return;
-    
+
     try {
       await api.post(`/users/${profile.id}/follow/`);
       setIsFollowing(true);
       // Atualizar contador de seguidores
-      setProfile(prev => prev ? { ...prev, followers_count: (prev.followers_count || 0) + 1 } : null);
+      setProfile(prev =>
+        prev
+          ? { ...prev, followers_count: (prev.followers_count || 0) + 1 }
+          : null
+      );
     } catch (err) {
       console.error('Failed to follow user:', err);
     }
@@ -114,12 +118,19 @@ const UserProfilePage: React.FC = () => {
 
   const handleUnfollow = async () => {
     if (!profile) return;
-    
+
     try {
       await api.delete(`/users/${profile.id}/unfollow/`);
       setIsFollowing(false);
       // Atualizar contador de seguidores
-      setProfile(prev => prev ? { ...prev, followers_count: Math.max((prev.followers_count || 0) - 1, 0) } : null);
+      setProfile(prev =>
+        prev
+          ? {
+              ...prev,
+              followers_count: Math.max((prev.followers_count || 0) - 1, 0),
+            }
+          : null
+      );
     } catch (err) {
       console.error('Failed to unfollow user:', err);
     }
@@ -128,11 +139,11 @@ const UserProfilePage: React.FC = () => {
   const handleLike = async (tweetId: number) => {
     try {
       await api.post(`/tweets/${tweetId}/like/`);
-      setTweets(tweets.map(tweet => 
-        tweet.id === tweetId 
-          ? { ...tweet, likes: tweet.likes + 1 }
-          : tweet
-      ));
+      setTweets(
+        tweets.map(tweet =>
+          tweet.id === tweetId ? { ...tweet, likes: tweet.likes + 1 } : tweet
+        )
+      );
     } catch (err) {
       console.error('Failed to like tweet:', err);
     }
@@ -141,11 +152,13 @@ const UserProfilePage: React.FC = () => {
   const handleRetweet = async (tweetId: number) => {
     try {
       await api.post(`/tweets/${tweetId}/retweet/`);
-      setTweets(tweets.map(tweet => 
-        tweet.id === tweetId 
-          ? { ...tweet, retweets: tweet.retweets + 1 }
-          : tweet
-      ));
+      setTweets(
+        tweets.map(tweet =>
+          tweet.id === tweetId
+            ? { ...tweet, retweets: tweet.retweets + 1 }
+            : tweet
+        )
+      );
     } catch (err) {
       console.error('Failed to retweet:', err);
     }
@@ -178,7 +191,7 @@ const UserProfilePage: React.FC = () => {
         >
           Home
         </Button>
-        
+
         <Button
           variant="outline"
           className="w-full justify-start"
@@ -193,9 +206,9 @@ const UserProfilePage: React.FC = () => {
         <div className="flex items-center space-x-3 mb-4">
           <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
             {getAvatarUrl(currentUser?.avatar) ? (
-              <img 
-                src={getAvatarUrl(currentUser?.avatar)!} 
-                alt="Avatar" 
+              <img
+                src={getAvatarUrl(currentUser?.avatar)!}
+                alt="Avatar"
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -205,7 +218,9 @@ const UserProfilePage: React.FC = () => {
             )}
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-900">{currentUser?.first_name} {currentUser?.last_name}</p>
+            <p className="text-sm font-medium text-gray-900">
+              {currentUser?.first_name} {currentUser?.last_name}
+            </p>
             <p className="text-xs text-gray-500">@{currentUser?.username}</p>
           </div>
         </div>
@@ -228,11 +243,11 @@ const UserProfilePage: React.FC = () => {
       <Layout sidebar={<Sidebar />}>
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Usuário não encontrado</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Usuário não encontrado
+            </h2>
             <p className="text-gray-600 mb-4">{error}</p>
-            <Button onClick={() => navigate('/')}>
-              Voltar ao início
-            </Button>
+            <Button onClick={() => navigate('/')}>Voltar ao início</Button>
           </div>
         </div>
       </Layout>
@@ -247,10 +262,10 @@ const UserProfilePage: React.FC = () => {
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-4">
           <div className="flex items-center space-x-4">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              icon={ArrowLeft} 
+            <Button
+              variant="outline"
+              size="sm"
+              icon={ArrowLeft}
               onClick={() => navigate('/')}
             >
               Voltar
@@ -268,16 +283,16 @@ const UserProfilePage: React.FC = () => {
               {/* Avatar */}
               <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
                 {getAvatarUrl(profile.avatar) ? (
-                  <img 
-                    src={getAvatarUrl(profile.avatar)!} 
-                    alt="Avatar" 
+                  <img
+                    src={getAvatarUrl(profile.avatar)!}
+                    alt="Avatar"
                     className="w-full h-full object-cover"
                   />
                 ) : (
                   <User className="h-10 w-10 text-gray-600" />
                 )}
               </div>
-              
+
               <div>
                 <h2 className="text-xl font-bold text-gray-900">
                   {profile.first_name} {profile.last_name}
@@ -292,7 +307,7 @@ const UserProfilePage: React.FC = () => {
             {/* Follow Button */}
             {!isOwnProfile && (
               <Button
-                variant={isFollowing ? "secondary" : "primary"}
+                variant={isFollowing ? 'secondary' : 'primary'}
                 icon={isFollowing ? UserMinus : UserPlus}
                 onClick={isFollowing ? handleUnfollow : handleFollow}
               >
@@ -306,17 +321,26 @@ const UserProfilePage: React.FC = () => {
             <div className="flex items-center space-x-1">
               <Users className="h-4 w-4 text-gray-500" />
               <span className="text-sm text-gray-600">
-                <span className="font-semibold">{profile.followers_count || 0}</span> seguidores
+                <span className="font-semibold">
+                  {profile.followers_count || 0}
+                </span>{' '}
+                seguidores
               </span>
             </div>
             <div className="flex items-center space-x-1">
               <User className="h-4 w-4 text-gray-500" />
               <span className="text-sm text-gray-600">
-                <span className="font-semibold">{profile.following_count || 0}</span> seguindo
+                <span className="font-semibold">
+                  {profile.following_count || 0}
+                </span>{' '}
+                seguindo
               </span>
             </div>
             <div className="text-sm text-gray-600">
-              <span className="font-semibold">{profile.tweets_count || tweets.length}</span> tweets
+              <span className="font-semibold">
+                {profile.tweets_count || tweets.length}
+              </span>{' '}
+              tweets
             </div>
           </div>
         </div>
@@ -326,14 +350,14 @@ const UserProfilePage: React.FC = () => {
           <div className="border-b border-gray-200 p-4">
             <h3 className="text-lg font-semibold text-gray-900">Tweets</h3>
           </div>
-          
+
           {tweetsLoading ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-lg">Carregando tweets...</div>
             </div>
           ) : (
-            <TweetList 
-              tweets={tweets} 
+            <TweetList
+              tweets={tweets}
               onLike={handleLike}
               onRetweet={handleRetweet}
               onReply={handleReply}

@@ -6,13 +6,8 @@ interface LogoProps {
   className?: string;
 }
 
-const Logo: React.FC<LogoProps> = ({ size = 24, className = "" }) => {
-  return (
-    <Twitter 
-      size={size} 
-      className={`text-blue-500 ${className}`} 
-    />
-  );
+const Logo: React.FC<LogoProps> = ({ size = 24, className = '' }) => {
+  return <Twitter size={size} className={`text-blue-500 ${className}`} />;
 };
 
 export default Logo;

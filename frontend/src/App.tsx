@@ -1,5 +1,10 @@
 import React, { ReactNode } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
@@ -13,14 +18,23 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-  
-  console.log('PrivateRoute: isAuthenticated =', isAuthenticated, 'loading =', loading);
-  
+
+  console.log(
+    'PrivateRoute: isAuthenticated =',
+    isAuthenticated,
+    'loading =',
+    loading
+  );
+
   if (loading) {
     console.log('PrivateRoute: Still loading...');
-    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Carregando...
+      </div>
+    );
   }
-  
+
   if (isAuthenticated) {
     console.log('PrivateRoute: User is authenticated, rendering children');
     return <>{children}</>;
@@ -38,29 +52,29 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route 
-              path="/" 
+            <Route
+              path="/"
               element={
                 <PrivateRoute>
                   <Feed />
                 </PrivateRoute>
-              } 
+              }
             />
-            <Route 
-              path="/profile" 
+            <Route
+              path="/profile"
               element={
                 <PrivateRoute>
                   <Profile />
                 </PrivateRoute>
-              } 
+              }
             />
-            <Route 
-              path="/user/:userId" 
+            <Route
+              path="/user/:userId"
               element={
                 <PrivateRoute>
                   <UserProfilePage />
                 </PrivateRoute>
-              } 
+              }
             />
           </Routes>
         </div>

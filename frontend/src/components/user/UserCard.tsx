@@ -24,7 +24,7 @@ const UserCard: React.FC<UserCardProps> = ({
   onFollow,
   onUnfollow,
   onUserClick,
-  showFollowButton = true
+  showFollowButton = true,
 }) => {
   const handleUserClick = () => {
     if (onUserClick) {
@@ -42,7 +42,7 @@ const UserCard: React.FC<UserCardProps> = ({
   };
 
   return (
-    <div 
+    <div
       className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
       onClick={handleUserClick}
     >
@@ -50,9 +50,9 @@ const UserCard: React.FC<UserCardProps> = ({
       <div className="flex-shrink-0">
         <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
           {getAvatarUrl(user.avatar) ? (
-            <img 
-              src={getAvatarUrl(user.avatar)!} 
-              alt="Avatar" 
+            <img
+              src={getAvatarUrl(user.avatar)!}
+              alt="Avatar"
               className="w-full h-full object-cover"
             />
           ) : (

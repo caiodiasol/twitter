@@ -30,7 +30,9 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUserId }) => {
     try {
       const response = await api.get('/users/');
       // Filtrar o usuário atual e usuários já seguidos
-      const allUsers = response.data.filter((user: SuggestedUser) => user.id !== currentUserId);
+      const allUsers = response.data.filter(
+        (user: SuggestedUser) => user.id !== currentUserId
+      );
       setSuggestedUsers(allUsers.slice(0, 5)); // Mostrar apenas 5 sugestões
     } catch (err) {
       console.error('Failed to fetch suggested users:', err);
@@ -92,22 +94,24 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUserId }) => {
     <div className="bg-white rounded-lg p-4">
       <div className="flex items-center space-x-2 mb-4">
         <Users className="h-5 w-5 text-gray-600" />
-        <h3 className="text-lg font-semibold text-gray-900">Seguestões de usuários</h3>
+        <h3 className="text-lg font-semibold text-gray-900">
+          Seguestões de usuários
+        </h3>
       </div>
-      
+
       <div className="space-y-3">
-        {suggestedUsers.map((user) => {
+        {suggestedUsers.map(user => {
           const isFollowing = following.includes(user.id);
-          
+
           return (
             <div key={user.id} className="flex items-center justify-between">
               <div className="flex items-center space-x-3 flex-1 min-w-0">
                 {/* Avatar */}
                 <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
                   {getAvatarUrl(user.avatar) ? (
-                    <img 
-                      src={getAvatarUrl(user.avatar)!} 
-                      alt="Avatar" 
+                    <img
+                      src={getAvatarUrl(user.avatar)!}
+                      alt="Avatar"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -116,22 +120,28 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUserId }) => {
                     </span>
                   )}
                 </div>
-                
+
                 {/* User Info */}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
                     {user.first_name} {user.last_name}
                   </p>
-                  <p className="text-xs text-gray-500 truncate">@{user.username}</p>
+                  <p className="text-xs text-gray-500 truncate">
+                    @{user.username}
+                  </p>
                   {user.bio && (
-                    <p className="text-xs text-gray-600 truncate mt-1">{user.bio}</p>
+                    <p className="text-xs text-gray-600 truncate mt-1">
+                      {user.bio}
+                    </p>
                   )}
                 </div>
               </div>
-              
+
               {/* Follow Button */}
               <button
-                onClick={() => isFollowing ? handleUnfollow(user.id) : handleFollow(user.id)}
+                onClick={() =>
+                  isFollowing ? handleUnfollow(user.id) : handleFollow(user.id)
+                }
                 className={`px-5 py-1 rounded-full text-xs font-medium transition-colors flex-shrink-0 flex items-center ${
                   isFollowing
                     ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -154,7 +164,7 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUserId }) => {
           );
         })}
       </div>
-      
+
       {suggestedUsers.length === 0 && (
         <p className="text-sm text-gray-500 text-center py-4">
           Nenhuma sugestão disponível

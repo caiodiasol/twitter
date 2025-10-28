@@ -48,7 +48,13 @@ interface CommentsModalProps {
   onCommentAdded?: (tweetId: number) => void;
 }
 
-const CommentsModal: React.FC<CommentsModalProps> = ({ tweet, isOpen, onClose, currentUser, onCommentAdded }) => {
+const CommentsModal: React.FC<CommentsModalProps> = ({
+  tweet,
+  isOpen,
+  onClose,
+  currentUser,
+  onCommentAdded,
+}) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -81,14 +87,14 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ tweet, isOpen, onClose, c
     try {
       setSubmitting(true);
       setError('');
-      
+
       const response = await api.post(`/tweets/${tweet.id}/comment/`, {
-        content: newComment.trim()
+        content: newComment.trim(),
       });
 
       setComments([response.data, ...comments]);
       setNewComment('');
-      
+
       // Notificar o componente pai que um comentário foi adicionado
       if (onCommentAdded) {
         onCommentAdded(tweet.id);
@@ -104,8 +110,10 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ tweet, isOpen, onClose, c
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+    );
+
     if (diffInHours < 1) {
       return 'Agora mesmo';
     } else if (diffInHours < 24) {
@@ -160,7 +168,9 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ tweet, isOpen, onClose, c
                   {tweet.author?.first_name} {tweet.author?.last_name}
                 </p>
                 <span className="text-gray-500">·</span>
-                <p className="text-sm text-gray-500">@{tweet.author?.username}</p>
+                <p className="text-sm text-gray-500">
+                  @{tweet.author?.username}
+                </p>
                 <span className="text-gray-500">·</span>
                 <p className="text-sm text-gray-500">
                   {formatDate(tweet.timestamp)}
@@ -171,10 +181,10 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ tweet, isOpen, onClose, c
 
               {tweet.image && (
                 <div className="mt-3">
-                  <img 
-                    src={getAvatarUrl(tweet.image)!} 
-                    alt="Tweet content" 
-                    className="rounded-lg max-h-60 w-full object-cover" 
+                  <img
+                    src={getAvatarUrl(tweet.image)!}
+                    alt="Tweet content"
+                    className="rounded-lg max-h-60 w-full object-cover"
                   />
                 </div>
               )}
@@ -195,9 +205,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ tweet, isOpen, onClose, c
               Carregando comentários...
             </div>
           ) : error ? (
-            <div className="p-4 text-center text-red-500">
-              {error}
-            </div>
+            <div className="p-4 text-center text-red-500">{error}</div>
           ) : comments.length === 0 ? (
             <div className="p-4 text-center text-gray-500">
               <MessageCircle className="h-12 w-12 mx-auto mb-2 text-gray-300" />
@@ -206,7 +214,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ tweet, isOpen, onClose, c
             </div>
           ) : (
             <div className="divide-y divide-gray-100">
-              {comments.map((comment) => (
+              {comments.map(comment => (
                 <div key={comment.id} className="p-4">
                   <div className="flex space-x-3">
                     {/* Comment Author Avatar */}
@@ -231,7 +239,9 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ tweet, isOpen, onClose, c
                           {comment.author.first_name} {comment.author.last_name}
                         </p>
                         <span className="text-gray-500">·</span>
-                        <p className="text-sm text-gray-500">@{comment.author.username}</p>
+                        <p className="text-sm text-gray-500">
+                          @{comment.author.username}
+                        </p>
                         <span className="text-gray-500">·</span>
                         <p className="text-sm text-gray-500">
                           {formatDate(comment.created_at)}
@@ -272,7 +282,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ tweet, isOpen, onClose, c
                   <input
                     type="text"
                     value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
+                    onChange={e => setNewComment(e.target.value)}
                     placeholder="Escreva um comentário..."
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     disabled={submitting}
