@@ -14,7 +14,7 @@ import Button from '../components/ui/Button';
 import Logo from '../components/ui/Logo';
 import TweetComposer from '../components/tweet/TweetComposer';
 import TweetList from '../components/tweet/TweetList';
-import SuggestedUsers from '../components/ui/SuggestedUsers';
+import SuggestedUsers from '../components/user/SuggestedUsers';
 import api from '../services/api';
 import { getAvatarUrl } from '../utils/avatar';
 
@@ -123,6 +123,10 @@ const Feed: React.FC = () => {
     const tweetUrl = `${window.location.origin}/tweet/${tweetId}`;
     navigator.clipboard.writeText(tweetUrl);
     console.log('Tweet shared:', tweetUrl);
+  };
+
+  const handleUserClick = (userId: number): void => {
+    navigate(`/user/${userId}`);
   };
 
   const handleCommentAdded = (tweetId: number): void => {
@@ -278,7 +282,7 @@ const Sidebar = () => (
         <div className="w-80 ml-6 space-y-4">
           {/* Suggested Users */}
           {user && (
-            <SuggestedUsers currentUserId={user.id} />
+            <SuggestedUsers onUserClick={handleUserClick} />
           )}
           
           {/* Trending Topics (placeholder) */}

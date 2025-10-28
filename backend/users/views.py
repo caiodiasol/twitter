@@ -109,3 +109,13 @@ class UserViewSet(ModelViewSet):
             'following_count': following_count,
             'followers_count': followers_count
         })
+    
+    @action(detail=True, methods=['get'])
+    def tweets(self, request, pk=None):
+        user = self.get_object()
+        tweets = user.tweets.all().order_by('-timestamp')
+        
+        # Importar o serializer de tweets
+        from tweets.serializers import TweetSerializer
+        serializer = TweetSerializer(tweets, many=True)
+        return Response(serializer.data)
