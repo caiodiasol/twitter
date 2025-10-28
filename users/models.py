@@ -9,3 +9,12 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+# users/models.py - Adicionar
+class UserFollowing(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    following_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user', 'following_user')

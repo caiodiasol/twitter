@@ -3,7 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import User
+from django.contrib.auth import authenticate
+from .models import User, UserFollowing
 from .serializers import UserSerializer, UserCreateSerializer
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -25,11 +26,64 @@ class UserViewSet(ModelViewSet):
             user = serializer.save()
             return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-   
+    
     @action(detail=False, methods=['get'])
     def me(self, request):
         if request.user.is_authenticated:
             serializer = UserSerializer(request.user)
             return Response(serializer.data)
         return Response({'error': 'Not authenticated'}, status=401)
+    
+    @action(detail=False, methods=['put', 'patch'])
+    def update_profile(self, request):
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    
+    @action(detail=False, methods=['post'])
+    def change_password(self, request):
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        
+        if not request.user.check_password(old_password):
+            return Response({'error': 'Old password is incorrect'}, status=400)
+        
+        request.user.set_password(new_password)
+        request.user.save()
+        return Response({'message': 'Password changed successfully'})
+    
+    @action(detail=True, methods=['post'])
+    def follow(self, request, pk=None):
+        user_to_follow = self.get_object()
+        if user_to_follow != request.user:
+            UserFollowing.objects.get_or_create(
+                user=request.user,
+                following_user=user_to_follow
+            )
+            return Response({'message': 'User followed successfully'})
+        return Response({'error': 'Cannot follow yourself'}, status=400)
+    
+    @action(detail=True, methods=['delete'])
+    def unfollow(self, request, pk=None):
+        user_to_unfollow = self.get_object()
+        UserFollowing.objects.filter(
+            user=request.user,
+            following_user=user_to_unfollow
+        ).delete()
+        return Response({'message': 'User unfollowed successfully'})
+    
+    @action(detail=False, methods=['get'])
+    def following(self, request):
+        following = UserFollowing.objects.filter(user=request.user)
+        users = [f.following_user for f in following]
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def followers(self, request):
+        followers = UserFollowing.objects.filter(following_user=request.user)
+        users = [f.user for f in followers]
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
