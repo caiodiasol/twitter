@@ -1,0 +1,16 @@
+[flake8]
+# Limite de comprimento de linha
+max-line-length = 88
+
+# Diretórios e arquivos a serem ignorados
+exclude =
+    .venv,
+    __pycache__,
+    */migrations/*,
+    *.pyc,
+    build,
+    dist
+
+# Ignorar alguns códigos se necessário
+# Ex.: E203 é compatível com black
+extend-ignore = E203, W503
