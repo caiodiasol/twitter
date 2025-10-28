@@ -8,36 +8,63 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tweets', '0003_tweetcomment_tweetlike'),
+        ("tweets", "0003_tweetcomment_tweetlike"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tweet',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to='tweet_images/'),
+            model_name="tweet",
+            name="image",
+            field=models.ImageField(blank=True, null=True, upload_to="tweet_images/"),
         ),
         migrations.AddField(
-            model_name='tweet',
-            name='location',
+            model_name="tweet",
+            name="location",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name='tweet',
-            name='parent_tweet',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='replies_tweet', to='tweets.tweet'),
+            model_name="tweet",
+            name="parent_tweet",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="replies_tweet",
+                to="tweets.tweet",
+            ),
         ),
         migrations.CreateModel(
-            name='TweetRetweet',
+            name="TweetRetweet",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('tweet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='retweets_tweet', to='tweets.tweet')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "tweet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="retweets_tweet",
+                        to="tweets.tweet",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('user', 'tweet')},
+                "unique_together": {("user", "tweet")},
             },
         ),
     ]
