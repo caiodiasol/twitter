@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from .models import Tweet, TweetComment
+
 from users.serializers import UserSerializer
+
+from .models import Tweet, TweetComment
 
 
 class TweetSerializer(serializers.ModelSerializer):

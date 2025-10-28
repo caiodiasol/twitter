@@ -1,9 +1,11 @@
 from django.test import TestCase
-from .models import Tweet
-from rest_framework.test import APIClient
 from rest_framework import status
+from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from users.models import User
+
+from .models import Tweet
 
 
 class TweetModelTest(TestCase):

@@ -1,10 +1,11 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView
+
 from .models import User, UserFollowing
-from .serializers import UserSerializer, UserCreateSerializer
+from .serializers import UserCreateSerializer, UserSerializer
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
