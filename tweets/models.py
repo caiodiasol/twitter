@@ -1,7 +1,8 @@
 from django.db import models
+from users.models import User
 
 class Tweet(models.Model):
-    author = models.CharField(max_length=100)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tweets')
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     likes = models.PositiveIntegerField(default=0)
