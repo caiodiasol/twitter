@@ -5,6 +5,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Feed from './pages/Feed';
 import Profile from './pages/Profile';
+import UserProfilePage from './pages/UserProfilePage';
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -50,6 +51,14 @@ const App: React.FC = () => {
               element={
                 <PrivateRoute>
                   <Profile />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/user/:userId" 
+              element={
+                <PrivateRoute>
+                  <UserProfilePage />
                 </PrivateRoute>
               } 
             />

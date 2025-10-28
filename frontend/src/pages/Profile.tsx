@@ -29,10 +29,17 @@ interface UserProfile {
   avatar?: string;
 }
 
+interface UserStats {
+  tweets_count: number;
+  following_count: number;
+  followers_count: number;
+}
+
 const Profile: React.FC = () => {
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -48,6 +55,7 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     fetchProfile();
+    fetchStats();
   }, []);
 
   const fetchProfile = async (): Promise<void> => {
@@ -69,6 +77,15 @@ const Profile: React.FC = () => {
       console.error('Failed to fetch profile:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchStats = async (): Promise<void> => {
+    try {
+      const response = await api.get(`/users/${user?.id}/stats/`);
+      setStats(response.data);
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
     }
   };
 
@@ -295,6 +312,26 @@ const Profile: React.FC = () => {
                 <p className="text-gray-500">@{profile?.username}</p>
               </div>
             </div>
+
+            {/* Stats Section */}
+            {stats && (
+              <div className="border-t border-gray-200 pt-6">
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-gray-900">{stats.tweets_count}</div>
+                    <div className="text-sm text-gray-500">Tweets</div>
+                  </div>
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-gray-900">{stats.following_count}</div>
+                    <div className="text-sm text-gray-500">Seguindo</div>
+                  </div>
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-gray-900">{stats.followers_count}</div>
+                    <div className="text-sm text-gray-500">Seguidores</div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Form Fields */}
             <div className="grid grid-cols-2 gap-4">

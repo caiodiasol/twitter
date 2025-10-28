@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Heart, MessageCircle, Repeat2, Share, MapPin } from 'lucide-react';
 import { getAvatarUrl } from '../../utils/avatar';
+import CommentsModal from './CommentsModal';
 
 interface TweetProps {
   id: number;
@@ -22,6 +23,14 @@ interface TweetProps {
   onRetweet?: (id: number) => void;
   onReply?: (id: number) => void;
   onShare?: (id: number) => void;
+  currentUser?: {
+    id: number;
+    username: string;
+    avatar?: string;
+    first_name: string;
+    last_name: string;
+  };
+  onCommentAdded?: (tweetId: number) => void;
 }
 
 const Tweet: React.FC<TweetProps> = ({
@@ -37,8 +46,11 @@ const Tweet: React.FC<TweetProps> = ({
   onLike,
   onRetweet,
   onReply,
-  onShare
+  onShare,
+  currentUser,
+  onCommentAdded
 }) => {
+  const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
   return (
     <div className="border-b border-gray-200 p-4 hover:bg-gray-50 transition-colors">
       <div className="flex space-x-3">
@@ -98,7 +110,7 @@ const Tweet: React.FC<TweetProps> = ({
           <div className="mt-3 flex items-center space-x-6 text-gray-500">
             {/* Comments */}
             <button 
-              onClick={() => onReply?.(id)}
+              onClick={() => setIsCommentsModalOpen(true)}
               className="flex items-center space-x-2 hover:text-blue-500 transition-colors group px-2 py-1 rounded-full hover:bg-blue-50"
             >
               <MessageCircle className="h-5 w-5" />
@@ -133,6 +145,27 @@ const Tweet: React.FC<TweetProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Comments Modal */}
+      {currentUser && (
+        <CommentsModal
+          tweet={{
+            id,
+            content,
+            image,
+            location,
+            timestamp,
+            likes,
+            retweets,
+            replies,
+            author
+          }}
+          isOpen={isCommentsModalOpen}
+          onClose={() => setIsCommentsModalOpen(false)}
+          currentUser={currentUser}
+          onCommentAdded={onCommentAdded}
+        />
+      )}
     </div>
   );
 };
