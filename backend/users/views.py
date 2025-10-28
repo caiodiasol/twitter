@@ -24,7 +24,16 @@ class UserViewSet(ModelViewSet):
         serializer = UserCreateSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+            # Gerar tokens JWT após criar o usuário
+            from rest_framework_simplejwt.tokens import RefreshToken
+            refresh = RefreshToken.for_user(user)
+            access_token = refresh.access_token
+            
+            return Response({
+                'user': UserSerializer(user).data,
+                'access': str(access_token),
+                'refresh': str(refresh)
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=False, methods=['get'])

@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from users.models import UserFollowing
-from .models import Tweet, TweetLike
+from .models import Tweet, TweetLike, TweetRetweet
 from .serializers import TweetSerializer, TweetCommentSerializer
 
 class TweetViewSet(viewsets.ModelViewSet):
@@ -64,9 +64,27 @@ class TweetViewSet(viewsets.ModelViewSet):
         serializer = TweetCommentSerializer(comments, many=True)
         return Response(serializer.data)
 
-        # tweets/views.py - Adicionar
     @action(detail=True, methods=['post'])
     def retweet(self, request, pk=None):
         original_tweet = self.get_object()
-        # Implementar retweet
-        pass
+        retweet, created = TweetRetweet.objects.get_or_create(
+            user=request.user,
+            tweet=original_tweet
+        )
+        if created:
+            original_tweet.retweets += 1
+            original_tweet.save()
+            return Response({'message': 'Tweet retweeted'})
+        return Response({'message': 'Tweet already retweeted'})
+
+    @action(detail=True, methods=['delete'])
+    def unretweet(self, request, pk=None):
+        tweet = self.get_object()
+        try:
+            retweet = TweetRetweet.objects.get(user=request.user, tweet=tweet)
+            retweet.delete()
+            tweet.retweets -= 1
+            tweet.save()
+            return Response({'message': 'Retweet removed'})
+        except TweetRetweet.DoesNotExist:
+            return Response({'error': 'Tweet not retweeted'}, status=400)

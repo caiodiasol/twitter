@@ -1,11 +1,13 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Logo from '../components/ui/Logo';
 
 interface FormData {
   username: string;
   email: string;
   password: string;
+  confirmPassword: string;
   first_name: string;
   last_name: string;
 }
@@ -15,6 +17,7 @@ const SignUp: React.FC = () => {
     username: '',
     email: '',
     password: '',
+    confirmPassword: '',
     first_name: '',
     last_name: '',
   });
@@ -36,12 +39,47 @@ const SignUp: React.FC = () => {
     setError('');
     setLoading(true);
 
-    const success = await register(formData);
+    console.log('Form data:', formData); // Debug
+
+    // Validação de senha dupla
+    if (formData.password !== formData.confirmPassword) {
+      setError('As senhas não coincidem. Verifique e tente novamente.');
+      setLoading(false);
+      return;
+    }
+
+    // Validação de campos obrigatórios
+    if (!formData.username || !formData.email || !formData.password || !formData.first_name || !formData.last_name) {
+      setError('Todos os campos são obrigatórios.');
+      setLoading(false);
+      return;
+    }
+
+    // Validação de senha mínima
+    if (formData.password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.');
+      setLoading(false);
+      return;
+    }
+
+    const userData = {
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+    };
+
+    console.log('Sending user data:', userData); // Debug
+
+    const success = await register(userData);
+    
+    console.log('Registration success:', success); // Debug
     
     if (success) {
-      navigate('/signin');
+      navigate('/');
     } else {
-      setError('Erro ao criar conta. Tente novamente.');
+      setError('Erro ao criar conta. Verifique os dados e tente novamente.');
     }
     
     setLoading(false);
@@ -51,6 +89,11 @@ const SignUp: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
+          {/* Logo */}
+          <div className="flex justify-center mb-6">
+            <Logo size={48} />
+          </div>
+          
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Crie sua conta
           </h2>
@@ -147,6 +190,29 @@ const SignUp: React.FC = () => {
                 value={formData.password}
                 onChange={handleChange}
               />
+            </div>
+            
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirmar Senha
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                className={`mt-1 appearance-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
+                  formData.confirmPassword && formData.password !== formData.confirmPassword 
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                    : 'border-gray-300'
+                }`}
+                placeholder="Confirme sua senha"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+              {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">As senhas não coincidem</p>
+              )}
             </div>
           </div>
 

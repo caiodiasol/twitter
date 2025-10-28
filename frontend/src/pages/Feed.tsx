@@ -1,23 +1,44 @@
-import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { 
+  Home, 
+  Search, 
+  Bell, 
+  Mail, 
+  User, 
+  LogOut
+} from 'lucide-react';
+import Layout from '../components/ui/Layout';
+import Button from '../components/ui/Button';
+import Logo from '../components/ui/Logo';
+import TweetComposer from '../components/tweet/TweetComposer';
+import TweetList from '../components/tweet/TweetList';
 import api from '../services/api';
+import { getAvatarUrl } from '../utils/avatar';
 
 interface Tweet {
   id: number;
   content: string;
+  image?: string;
+  location?: string;
   timestamp: string;
   likes: number;
   retweets: number;
   replies: number;
   author?: {
+    id: number;
     username: string;
+    avatar?: string;
+    first_name: string;
+    last_name: string;
   };
 }
 
 const Feed: React.FC = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [tweets, setTweets] = useState<Tweet[]>([]);
-  const [newTweet, setNewTweet] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
@@ -37,23 +58,166 @@ const Feed: React.FC = () => {
     }
   };
 
-  const handleCreateTweet = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault();
-    if (!newTweet.trim()) return;
-
+  const handleCreateTweet = async (data: { content: string; image?: File; location?: string }): Promise<void> => {
     try {
-      const response = await api.post('/tweets/', { content: newTweet });
+      const formData = new FormData();
+      formData.append('content', data.content);
+      
+      if (data.image) {
+        formData.append('image', data.image);
+      }
+      
+      if (data.location) {
+        formData.append('location', data.location);
+      }
+
+      const response = await api.post('/tweets/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
       setTweets([response.data, ...tweets]);
-      setNewTweet('');
     } catch (err) {
       setError('Erro ao criar tweet');
       console.error('Failed to create tweet:', err);
     }
   };
 
+  const handleLike = async (tweetId: number): Promise<void> => {
+    try {
+      await api.post(`/tweets/${tweetId}/like/`);
+      // Atualizar contador local
+      setTweets(tweets.map(tweet => 
+        tweet.id === tweetId 
+          ? { ...tweet, likes: tweet.likes + 1 }
+          : tweet
+      ));
+    } catch (err) {
+      console.error('Failed to like tweet:', err);
+    }
+  };
+
+  const handleRetweet = async (tweetId: number): Promise<void> => {
+    try {
+      await api.post(`/tweets/${tweetId}/retweet/`);
+      // Atualizar contador local
+      setTweets(tweets.map(tweet => 
+        tweet.id === tweetId 
+          ? { ...tweet, retweets: tweet.retweets + 1 }
+          : tweet
+      ));
+    } catch (err) {
+      console.error('Failed to retweet:', err);
+    }
+  };
+
+  const handleReply = (tweetId: number): void => {
+    // Implementar modal de resposta
+    console.log('Reply to tweet:', tweetId);
+  };
+
+  const handleShare = (tweetId: number): void => {
+    // Implementar compartilhamento
+    const tweetUrl = `${window.location.origin}/tweet/${tweetId}`;
+    navigator.clipboard.writeText(tweetUrl);
+    console.log('Tweet shared:', tweetUrl);
+  };
+
   const handleLogout = (): void => {
     logout();
+    navigate('/signin');
   };
+
+// Feed.tsx - Sidebar completo corrigido
+const Sidebar = () => (
+  <div className="flex flex-col h-full p-4">
+    {/* Logo */}
+    <div className="flex items-center space-x-2 mb-8">
+      <Logo size={32} />
+      <span className="text-xl font-bold text-gray-900">Twitter</span>
+    </div>
+
+    {/* Navigation */}
+    <nav className="flex-1 space-y-2">
+      <Button
+        variant="primary"
+        className="w-full justify-start"
+        icon={Home}
+      >
+        Home
+      </Button>
+      
+      <Button
+        variant="outline"
+        className="w-full justify-start"
+        icon={Search}
+        onClick={() => {/* Navigate to explore */}}
+      >
+        Explore
+      </Button>
+      
+      <Button
+        variant="outline"
+        className="w-full justify-start"
+        icon={Bell}
+        onClick={() => {/* Navigate to notifications */}}
+      >
+        Notifications
+      </Button>
+      
+      <Button
+        variant="outline"
+        className="w-full justify-start"
+        icon={Mail}
+        onClick={() => {/* Navigate to messages */}}
+      >
+        Messages
+      </Button>
+      
+      <Button
+        variant="outline"
+        className="w-full justify-start"
+        icon={User}
+        onClick={() => navigate('/profile')}
+      >
+        Profile
+      </Button>
+    </nav>
+
+    {/* User Info & Logout */}
+    <div className="border-t border-gray-200 pt-4">
+      <div className="flex items-center space-x-3 mb-4">
+        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+          {getAvatarUrl(user?.avatar) ? (
+            <img 
+              src={getAvatarUrl(user?.avatar)!} 
+              alt="Avatar" 
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-gray-600 font-medium text-sm">
+              {user?.username?.charAt(0).toUpperCase()}
+            </span>
+          )}
+        </div>
+        <div>
+          <p className="text-sm font-medium text-gray-900">{user?.first_name} {user?.last_name}</p>
+          <p className="text-xs text-gray-500">@{user?.username}</p>
+        </div>
+      </div>
+      
+      <Button
+        variant="outline"
+        className="w-full justify-start"
+        icon={LogOut}
+        onClick={handleLogout}
+      >
+        Logout
+      </Button>
+    </div>
+  </div>
+);
 
   if (loading) {
     return (
@@ -64,97 +228,39 @@ const Feed: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Twitter Clone</h1>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Olá, {user?.username}!</span>
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
-              >
-                Sair
-              </button>
+    <Layout sidebar={<Sidebar />}>
+      <div className="max-w-2xl mx-auto">
+            {/* Header */}
+            <div className="bg-white border-b border-gray-200 p-4">
+              <h1 className="text-xl font-bold text-gray-900">Home</h1>
             </div>
-          </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-6">
-        {/* Create Tweet Form */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <form onSubmit={handleCreateTweet}>
-            <textarea
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              rows={3}
-              placeholder="O que está acontecendo?"
-              value={newTweet}
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setNewTweet(e.target.value)}
-            />
-            <div className="flex justify-end mt-3">
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium"
-              >
-                Tweetar
-              </button>
-            </div>
-          </form>
-        </div>
+            {/* Tweet Composer */}
+            {user && (
+              <TweetComposer
+                user={user}
+                onSubmit={handleCreateTweet}
+                loading={loading}
+              />
+            )}
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
-          </div>
-        )}
-
-        {/* Tweets Feed */}
-        <div className="space-y-4">
-          {tweets.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-              <p className="text-gray-500 text-lg">Nenhum tweet encontrado</p>
-              <p className="text-gray-400 text-sm mt-2">Seja o primeiro a tweetar!</p>
-            </div>
-          ) : (
-            tweets.map((tweet) => (
-              <div key={tweet.id} className="bg-white rounded-lg shadow-sm border p-6">
-                <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                      <span className="text-gray-600 font-medium">
-                        {tweet.author?.username?.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2">
-                      <p className="text-sm font-medium text-gray-900">
-                        {tweet.author?.username || 'Usuário'}
-                      </p>
-                      <span className="text-gray-500">·</span>
-                      <p className="text-sm text-gray-500">
-                        {new Date(tweet.timestamp).toLocaleDateString('pt-BR')}
-                      </p>
-                    </div>
-                    <p className="mt-1 text-gray-900">{tweet.content}</p>
-                    <div className="mt-3 flex items-center space-x-6 text-gray-500 text-sm">
-                      <span>❤️ {tweet.likes}</span>
-                      <span>🔄 {tweet.retweets}</span>
-                      <span>💬 {tweet.replies}</span>
-                    </div>
-                  </div>
-                </div>
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 m-4 rounded">
+                {error}
               </div>
-            ))
-          )}
-        </div>
-      </main>
-    </div>
+            )}
+
+            {/* Tweets */}
+            <TweetList 
+              tweets={tweets} 
+              onLike={handleLike}
+              onRetweet={handleRetweet}
+              onReply={handleReply}
+              onShare={handleShare}
+            />
+      </div>
+    </Layout>
   );
 };
 
