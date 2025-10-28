@@ -33,7 +33,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -66,9 +66,13 @@ jobs:
         poetry run python manage.py makemigrations --check
         poetry run python manage.py migrate
       env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5433/twitter_test
+        POSTGRES_DB: twitter_test
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        DB_HOST: localhost
+        DB_PORT: 5432
         SECRET_KEY: test-secret-key-for-ci
-        DEBUG: False
+        DEBUG: false
 
     - name: Run tests with coverage
       run: |
@@ -77,9 +81,13 @@ jobs:
         poetry run coverage report
         poetry run coverage xml
       env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5433/twitter_test
+        POSTGRES_DB: twitter_test
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        DB_HOST: localhost
+        DB_PORT: 5432
         SECRET_KEY: test-secret-key-for-ci
-        DEBUG: False
+        DEBUG: false
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
