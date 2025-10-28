@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import api from '../services/api';
 
 interface User {
@@ -53,12 +59,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuth();
   }, []);
 
-
   const checkAuth = async (): Promise<void> => {
     console.log('AuthContext: Starting checkAuth');
     const token = localStorage.getItem('accessToken');
     console.log('AuthContext: Token found:', !!token);
-    
+
     if (token) {
       try {
         console.log('AuthContext: Validating token with /users/me/');
@@ -74,17 +79,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } else {
       console.log('AuthContext: No token found');
     }
-    
+
     console.log('AuthContext: Setting loading to false');
     setLoading(false);
   };
 
-
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (
+    username: string,
+    password: string
+  ): Promise<boolean> => {
     try {
       const response = await api.post('/users/login/', { username, password });
       const { access, refresh, user: userData } = response.data;
-      
+
       localStorage.setItem('accessToken', access);
       localStorage.setItem('refreshToken', refresh);
       api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
@@ -105,16 +112,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('AuthContext: Starting registration with data:', userData);
       const response = await api.post('/users/register/', userData);
       console.log('AuthContext: Registration response:', response.data);
-      
+
       const { access, refresh, user: newUser } = response.data;
-      
+
       console.log('AuthContext: Setting tokens and user data');
       localStorage.setItem('accessToken', access);
       localStorage.setItem('refreshToken', refresh);
       api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
       setUser(newUser);
       setIsAuthenticated(true);
-      
+
       console.log('AuthContext: Registration successful, user authenticated');
       return true;
     } catch (error: any) {
@@ -138,15 +145,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      isAuthenticated,
-      loading,
-      login,
-      register,
-      logout,
-      updateUser,
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        loading,
+        login,
+        register,
+        logout,
+        updateUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

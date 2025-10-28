@@ -25,8 +25,8 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onUserClick }) => {
       setLoading(true);
       const response = await api.get('/users/');
       // Filtrar o usuário atual e usuários já seguidos
-      const filteredUsers = response.data.filter((user: any) => 
-        user.id !== currentUser?.id && !following.has(user.id)
+      const filteredUsers = response.data.filter(
+        (user: any) => user.id !== currentUser?.id && !following.has(user.id)
       );
       // Pegar apenas os primeiros 5 usuários
       setSuggestedUsers(filteredUsers.slice(0, 5));
@@ -42,12 +42,13 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onUserClick }) => {
       const response = await api.get('/users/');
       // Filtrar o usuário atual, usuários já seguidos e usuários já na lista de sugestões
       const currentSuggestionIds = new Set(suggestedUsers.map(user => user.id));
-      const filteredUsers = response.data.filter((user: any) => 
-        user.id !== currentUser?.id && 
-        !following.has(user.id) && 
-        !currentSuggestionIds.has(user.id)
+      const filteredUsers = response.data.filter(
+        (user: any) =>
+          user.id !== currentUser?.id &&
+          !following.has(user.id) &&
+          !currentSuggestionIds.has(user.id)
       );
-      
+
       // Se há usuários disponíveis, adicionar o primeiro à lista
       if (filteredUsers.length > 0) {
         setSuggestedUsers(prev => [...prev, filteredUsers[0]]);
@@ -60,7 +61,9 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onUserClick }) => {
   const fetchFollowing = async () => {
     try {
       const response = await api.get('/users/following/');
-      const followingIds = new Set<number>(response.data.map((user: any) => user.id as number));
+      const followingIds = new Set<number>(
+        response.data.map((user: any) => user.id as number)
+      );
       setFollowing(followingIds);
     } catch (error) {
       console.error('Failed to fetch following:', error);
@@ -71,10 +74,10 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onUserClick }) => {
     try {
       await api.post(`/users/${userId}/follow/`);
       setFollowing(prev => new Set([...Array.from(prev), userId]));
-      
+
       // Remover usuário da lista de sugestões
       setSuggestedUsers(prev => prev.filter(user => user.id !== userId));
-      
+
       // Buscar um novo usuário para substituir
       await fetchNewUserToSuggest();
     } catch (error) {
@@ -109,7 +112,9 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onUserClick }) => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <div className="flex items-center space-x-2 mb-4">
           <Users className="h-5 w-5 text-gray-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Sugestões para você</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Sugestões para você
+          </h3>
         </div>
         <div className="space-y-3">
           {[...Array(3)].map((_, index) => (
@@ -132,14 +137,18 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onUserClick }) => {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
             <Users className="h-5 w-5 text-gray-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Sugestões para você</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Sugestões para você
+            </h3>
           </div>
           <button
             onClick={handleRefresh}
             disabled={refreshing}
             className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
+            />
           </button>
         </div>
         <p className="text-gray-500 text-center py-4">
@@ -154,19 +163,23 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onUserClick }) => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <Users className="h-5 w-5 text-gray-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Sugestões para você</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Sugestões para você
+          </h3>
         </div>
         <button
           onClick={handleRefresh}
           disabled={refreshing}
           className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
         >
-          <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
+          />
         </button>
       </div>
-      
+
       <div className="space-y-1">
-        {suggestedUsers.map((user) => (
+        {suggestedUsers.map(user => (
           <UserCard
             key={user.id}
             user={user}

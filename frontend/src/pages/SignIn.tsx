@@ -15,7 +15,7 @@ const SignIn: React.FC = () => {
   });
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -39,13 +39,13 @@ const SignIn: React.FC = () => {
     }
 
     const success = await login(formData.username, formData.password);
-    
+
     if (success) {
       navigate('/');
     } else {
       setError('Credenciais inválidas. Verifique seu usuário e senha.');
     }
-    
+
     setLoading(false);
   };
 
@@ -57,7 +57,7 @@ const SignIn: React.FC = () => {
           <div className="flex justify-center mb-6">
             <Logo size={48} />
           </div>
-          
+
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Entre na sua conta
           </h2>
@@ -71,7 +71,7 @@ const SignIn: React.FC = () => {
             </Link>
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>

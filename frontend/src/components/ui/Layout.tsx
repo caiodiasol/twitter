@@ -15,11 +15,9 @@ const Layout: React.FC<LayoutProps> = ({ children, sidebar }) => {
             {sidebar}
           </div>
         )}
-        
+
         {/* Main Content */}
-        <div className="flex-1">
-          {children}
-        </div>
+        <div className="flex-1">{children}</div>
       </div>
     </div>
   );

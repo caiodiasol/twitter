@@ -48,7 +48,7 @@ const Tweet: React.FC<TweetProps> = ({
   onReply,
   onShare,
   currentUser,
-  onCommentAdded
+  onCommentAdded,
 }) => {
   const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
   return (
@@ -58,9 +58,9 @@ const Tweet: React.FC<TweetProps> = ({
         <div className="flex-shrink-0">
           <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
             {getAvatarUrl(author?.avatar) ? (
-              <img 
-                src={getAvatarUrl(author?.avatar)!} 
-                alt="Avatar" 
+              <img
+                src={getAvatarUrl(author?.avatar)!}
+                alt="Avatar"
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -70,7 +70,7 @@ const Tweet: React.FC<TweetProps> = ({
             )}
           </div>
         </div>
-        
+
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2">
@@ -78,26 +78,28 @@ const Tweet: React.FC<TweetProps> = ({
               {author?.first_name} {author?.last_name}
             </p>
             <span className="text-gray-500">·</span>
-            <p className="text-sm text-gray-500">@{author?.username || 'Usuário Desconhecido'}</p>
+            <p className="text-sm text-gray-500">
+              @{author?.username || 'Usuário Desconhecido'}
+            </p>
             <span className="text-gray-500">·</span>
             <p className="text-sm text-gray-500">
               {new Date(timestamp).toLocaleDateString('pt-BR')}
             </p>
           </div>
-          
+
           <p className="mt-1 text-gray-900">{content}</p>
-          
+
           {/* Image */}
           {image && (
             <div className="mt-3">
-              <img 
-                src={getAvatarUrl(image) || image} 
-                alt="Tweet image" 
+              <img
+                src={getAvatarUrl(image) || image}
+                alt="Tweet image"
                 className="w-full max-w-md rounded-lg object-cover"
               />
             </div>
           )}
-          
+
           {/* Location */}
           {location && (
             <div className="mt-2 flex items-center text-gray-500 text-sm">
@@ -105,38 +107,38 @@ const Tweet: React.FC<TweetProps> = ({
               <span>{location}</span>
             </div>
           )}
-          
+
           {/* Actions */}
           <div className="mt-3 flex items-center space-x-6 text-gray-500">
             {/* Comments */}
-            <button 
+            <button
               onClick={() => setIsCommentsModalOpen(true)}
               className="flex items-center space-x-2 hover:text-blue-500 transition-colors group px-2 py-1 rounded-full hover:bg-blue-50"
             >
               <MessageCircle className="h-5 w-5" />
               <span className="text-sm font-medium">{replies}</span>
             </button>
-            
+
             {/* Retweet */}
-            <button 
+            <button
               onClick={() => onRetweet?.(id)}
               className="flex items-center space-x-2 hover:text-green-500 transition-colors group px-2 py-1 rounded-full hover:bg-green-50"
             >
               <Repeat2 className="h-5 w-5" />
               <span className="text-sm font-medium">{retweets}</span>
             </button>
-            
+
             {/* Like */}
-            <button 
+            <button
               onClick={() => onLike?.(id)}
               className="flex items-center space-x-2 hover:text-red-500 transition-colors group px-2 py-1 rounded-full hover:bg-red-50"
             >
               <Heart className="h-5 w-5" />
               <span className="text-sm font-medium">{likes}</span>
             </button>
-            
+
             {/* Share */}
-            <button 
+            <button
               onClick={() => onShare?.(id)}
               className="flex items-center space-x-2 hover:text-blue-500 transition-colors group px-2 py-1 rounded-full hover:bg-blue-50"
             >
@@ -158,7 +160,7 @@ const Tweet: React.FC<TweetProps> = ({
             likes,
             retweets,
             replies,
-            author
+            author,
           }}
           isOpen={isCommentsModalOpen}
           onClose={() => setIsCommentsModalOpen(false)}

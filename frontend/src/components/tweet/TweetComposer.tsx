@@ -9,11 +9,19 @@ interface TweetComposerProps {
     first_name: string;
     last_name: string;
   };
-  onSubmit: (data: { content: string; image?: File; location?: string }) => void;
+  onSubmit: (data: {
+    content: string;
+    image?: File;
+    location?: string;
+  }) => void;
   loading?: boolean;
 }
 
-const TweetComposer: React.FC<TweetComposerProps> = ({ user, onSubmit, loading = false }) => {
+const TweetComposer: React.FC<TweetComposerProps> = ({
+  user,
+  onSubmit,
+  loading = false,
+}) => {
   const [content, setContent] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -44,7 +52,11 @@ const TweetComposer: React.FC<TweetComposerProps> = ({ user, onSubmit, loading =
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (content.trim() || image) {
-      onSubmit({ content, image: image || undefined, location: location || undefined });
+      onSubmit({
+        content,
+        image: image || undefined,
+        location: location || undefined,
+      });
       setContent('');
       setImage(null);
       setImagePreview(null);
@@ -66,9 +78,9 @@ const TweetComposer: React.FC<TweetComposerProps> = ({ user, onSubmit, loading =
           <div className="flex-shrink-0">
             <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
               {getAvatarUrl(user.avatar) ? (
-                <img 
-                  src={getAvatarUrl(user.avatar)!} 
-                  alt="Avatar" 
+                <img
+                  src={getAvatarUrl(user.avatar)!}
+                  alt="Avatar"
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -87,15 +99,15 @@ const TweetComposer: React.FC<TweetComposerProps> = ({ user, onSubmit, loading =
               rows={3}
               placeholder="What's happening?"
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={e => setContent(e.target.value)}
             />
 
             {/* Image Preview */}
             {imagePreview && (
               <div className="relative mb-3">
-                <img 
-                  src={imagePreview} 
-                  alt="Preview" 
+                <img
+                  src={imagePreview}
+                  alt="Preview"
                   className="w-full max-w-md rounded-lg object-cover"
                 />
                 <button
@@ -115,7 +127,7 @@ const TweetComposer: React.FC<TweetComposerProps> = ({ user, onSubmit, loading =
                   type="text"
                   placeholder="Add location..."
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onChange={e => setLocation(e.target.value)}
                   className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -161,8 +173,8 @@ const TweetComposer: React.FC<TweetComposerProps> = ({ user, onSubmit, loading =
                   type="button"
                   onClick={() => setShowLocationInput(!showLocationInput)}
                   className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors ${
-                    showLocationInput 
-                      ? 'text-blue-500 bg-blue-50' 
+                    showLocationInput
+                      ? 'text-blue-500 bg-blue-50'
                       : 'text-blue-500 hover:bg-blue-50'
                   }`}
                 >
