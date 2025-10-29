@@ -134,28 +134,28 @@ if IS_RENDER:
     # CORS para produção - permitir todas as origens temporariamente para debug
     CORS_ALLOW_ALL_ORIGINS = True
     CORS_ALLOW_CREDENTIALS = True
-    
+
     # Headers adicionais para CORS
     CORS_ALLOW_HEADERS = [
-        'accept',
-        'accept-encoding',
-        'authorization',
-        'content-type',
-        'dnt',
-        'origin',
-        'user-agent',
-        'x-csrftoken',
-        'x-requested-with',
+        "accept",
+        "accept-encoding",
+        "authorization",
+        "content-type",
+        "dnt",
+        "origin",
+        "user-agent",
+        "x-csrftoken",
+        "x-requested-with",
     ]
-    
+
     # Métodos permitidos
     CORS_ALLOW_METHODS = [
-        'DELETE',
-        'GET',
-        'OPTIONS',
-        'PATCH',
-        'POST',
-        'PUT',
+        "DELETE",
+        "GET",
+        "OPTIONS",
+        "PATCH",
+        "POST",
+        "PUT",
     ]
 else:
     # CORS para desenvolvimento
