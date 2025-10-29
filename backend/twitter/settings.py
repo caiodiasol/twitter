@@ -22,13 +22,13 @@ SECRET_KEY = os.environ.get(
 )
 
 # Detectar se está em produção (Render)
-IS_RENDER = 'RENDER' in os.environ
+IS_RENDER = "RENDER" in os.environ
 
 if IS_RENDER:
     DEBUG = False
     ALLOWED_HOSTS = [
-        os.environ.get('RENDER_EXTERNAL_HOSTNAME', ''),
-        'twitter-backend.onrender.com',  # URL que o Render vai gerar
+        os.environ.get("RENDER_EXTERNAL_HOSTNAME", ""),
+        "twitter-backend.onrender.com",  # URL que o Render vai gerar
     ]
 else:
     DEBUG = True
@@ -89,10 +89,10 @@ WSGI_APPLICATION = "twitter.wsgi.application"
 if IS_RENDER:
     # Database do Render (usa DATABASE_URL automaticamente)
     import dj_database_url
+
     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('DATABASE_URL'),
-            conn_max_age=600
+        "default": dj_database_url.config(
+            default=os.environ.get("DATABASE_URL"), conn_max_age=600
         )
     }
 else:
@@ -191,20 +191,20 @@ AUTH_USER_MODEL = "users.User"
 # Logging para produção
 if IS_RENDER:
     LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-            'file': {
-                'level': 'ERROR',
-                'class': 'logging.FileHandler',
-                'filename': os.path.join(BASE_DIR, 'django.log'),
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "file": {
+                "level": "ERROR",
+                "class": "logging.FileHandler",
+                "filename": os.path.join(BASE_DIR, "django.log"),
             },
         },
-        'loggers': {
-            'django': {
-                'handlers': ['file'],
-                'level': 'ERROR',
-                'propagate': True,
+        "loggers": {
+            "django": {
+                "handlers": ["file"],
+                "level": "ERROR",
+                "propagate": True,
             },
         },
     }
