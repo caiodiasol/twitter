@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop, feat-pythonanywhere ]
+    branches: [ main, develop, feat-render ]
   pull_request:
-    branches: [ main, develop, feat-pythonanywhere ]
+    branches: [ main, develop, feat-render ]
 
 env:
   NODE_VERSION: '18'
