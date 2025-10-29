@@ -16,15 +16,17 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-ulv7qol-y9kl#y(y9@4g#zt$5jhjg9ti1l!)oc@$7c^%9am-77")
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "django-insecure-ulv7qol-y9kl#y(y9@4g#zt$5jhjg9ti1l!)oc@$7c^%9am-77"
+)
 
 # Detectar se está em produção (PythonAnywhere)
-IS_PRODUCTION = 'PYTHONANYWHERE_DOMAIN' in os.environ
+IS_PRODUCTION = "PYTHONANYWHERE_DOMAIN" in os.environ
 
 if IS_PRODUCTION:
     DEBUG = False
     ALLOWED_HOSTS = [
-        os.environ.get('PYTHONANYWHERE_DOMAIN', 'caiodiasol.pythonanywhere.com'),
+        os.environ.get("PYTHONANYWHERE_DOMAIN", "caiodiasol.pythonanywhere.com"),
         f"www.{os.environ.get('PYTHONANYWHERE_DOMAIN', 'caiodiasol.pythonanywhere.com')}",
     ]
 else:
@@ -91,7 +93,9 @@ if IS_PRODUCTION:
             "NAME": os.environ.get("DB_NAME", "caiodiasol$twitter_db"),
             "USER": os.environ.get("DB_USER", "caiodiasol"),
             "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-            "HOST": os.environ.get("DB_HOST", "caiodiasol.mysql.pythonanywhere-services.com"),
+            "HOST": os.environ.get(
+                "DB_HOST", "caiodiasol.mysql.pythonanywhere-services.com"
+            ),
             "PORT": os.environ.get("DB_PORT", ""),
         }
     }
@@ -202,20 +206,20 @@ AUTH_USER_MODEL = "users.User"
 # Logging para produção
 if IS_PRODUCTION:
     LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-            'file': {
-                'level': 'ERROR',
-                'class': 'logging.FileHandler',
-                'filename': os.path.join(BASE_DIR, 'django.log'),
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "file": {
+                "level": "ERROR",
+                "class": "logging.FileHandler",
+                "filename": os.path.join(BASE_DIR, "django.log"),
             },
         },
-        'loggers': {
-            'django': {
-                'handlers': ['file'],
-                'level': 'ERROR',
-                'propagate': True,
+        "loggers": {
+            "django": {
+                "handlers": ["file"],
+                "level": "ERROR",
+                "propagate": True,
             },
         },
     }
