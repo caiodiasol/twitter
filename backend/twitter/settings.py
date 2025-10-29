@@ -17,7 +17,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get(
-    "SECRET_KEY", "django-insecure-ulv7qol-y9kl#y(y9@4g#zt$5jhjg9ti1l!)oc@$7c^%9am-77"
+    "SECRET_KEY",
+    "django-insecure-ulv7qol-y9kl#y(y9@4g#zt$5jhjg9ti1l!)oc@$7c^%9am-77",
 )
 
 # Detectar se está em produção (PythonAnywhere)
@@ -26,8 +27,14 @@ IS_PRODUCTION = "PYTHONANYWHERE_DOMAIN" in os.environ
 if IS_PRODUCTION:
     DEBUG = False
     ALLOWED_HOSTS = [
-        os.environ.get("PYTHONANYWHERE_DOMAIN", "caiodiasol.pythonanywhere.com"),
-        f"www.{os.environ.get('PYTHONANYWHERE_DOMAIN', 'caiodiasol.pythonanywhere.com')}",
+        os.environ.get(
+            "PYTHONANYWHERE_DOMAIN",
+            "caiodiasol.pythonanywhere.com",
+        ),
+        f"www.{os.environ.get(
+            'PYTHONANYWHERE_DOMAIN',
+            'caiodiasol.pythonanywhere.com',
+        )}",
     ]
 else:
     DEBUG = True
@@ -86,7 +93,6 @@ WSGI_APPLICATION = "twitter.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 if IS_PRODUCTION:
-    # Configuração para PythonAnywhere (PostgreSQL)
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -94,13 +100,13 @@ if IS_PRODUCTION:
             "USER": os.environ.get("DB_USER", "caiodiasol"),
             "PASSWORD": os.environ.get("DB_PASSWORD", ""),
             "HOST": os.environ.get(
-                "DB_HOST", "caiodiasol.mysql.pythonanywhere-services.com"
+                "DB_HOST",
+                "caiodiasol.mysql.pythonanywhere-services.com",
             ),
             "PORT": os.environ.get("DB_PORT", ""),
         }
     }
 else:
-    # Configuração para desenvolvimento local
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -133,19 +139,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Configurações CORS
 if IS_PRODUCTION:
-    # CORS para produção - atualizar com URL da Vercel após deploy
     CORS_ALLOWED_ORIGINS = [
-        f"https://{os.environ.get('PYTHONANYWHERE_DOMAIN', 'caiodiasol.pythonanywhere.com')}",
-        "https://seu-frontend.vercel.app",  # ← ATUALIZAR DEPOIS DO DEPLOY DA VERCEL
-        "http://localhost:3000",  # Para desenvolvimento local
+        f"https://{os.environ.get(
+            'PYTHONANYWHERE_DOMAIN',
+            'caiodiasol.pythonanywhere.com',
+        )}",
+        "https://seu-frontend.vercel.app",  # atualizar após deploy
+        "http://localhost:3000",
         "http://localhost:3001",
     ]
     CORS_ALLOW_CREDENTIALS = True
 else:
-    # CORS para desenvolvimento
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
@@ -154,21 +160,17 @@ else:
     CORS_ALLOW_CREDENTIALS = True
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
+# Static files
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Media files configuration (uploads de usuários)
+# Media files
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -195,15 +197,10 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Custom User Model
 AUTH_USER_MODEL = "users.User"
 
-# Logging para produção
+# Logging
 if IS_PRODUCTION:
     LOGGING = {
         "version": 1,
