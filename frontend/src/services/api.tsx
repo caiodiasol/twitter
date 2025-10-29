@@ -5,9 +5,10 @@ import axios, {
   AxiosError,
 } from 'axios';
 
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://twitter-backend.onrender.com/api'  // ← URL do Render
-  : 'http://localhost:8001/api';
+const API_BASE_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://twitter-backend.onrender.com/api' // ← URL do Render
+    : 'http://localhost:8001/api';
 
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
