@@ -16,13 +16,20 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-ulv7qol-y9kl#y(y9@4g#zt$5jhjg9ti1l!)oc@$7c^%9am-77"
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-ulv7qol-y9kl#y(y9@4g#zt$5jhjg9ti1l!)oc@$7c^%9am-77")
 
-DEBUG = True
+# Detectar se está em produção (PythonAnywhere)
+IS_PRODUCTION = 'PYTHONANYWHERE_DOMAIN' in os.environ
 
-# ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost 127.0.0.1").split()
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-
+if IS_PRODUCTION:
+    DEBUG = False
+    ALLOWED_HOSTS = [
+        os.environ.get('PYTHONANYWHERE_DOMAIN', 'caiodiasol.pythonanywhere.com'),
+        f"www.{os.environ.get('PYTHONANYWHERE_DOMAIN', 'caiodiasol.pythonanywhere.com')}",
+    ]
+else:
+    DEBUG = True
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 # Application definition
 
@@ -63,7 +70,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
-                "django.template.context_processors.request",
+                "django.template.backends.django.DjangoTemplates",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
@@ -76,16 +83,30 @@ WSGI_APPLICATION = "twitter.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_DB", "twitter_db"),
-        "USER": os.environ.get("POSTGRES_USER", "twitter_user"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "twitter_password"),
-        "HOST": os.environ.get("DB_HOST", "localhost"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
+if IS_PRODUCTION:
+    # Configuração para PythonAnywhere (PostgreSQL)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("DB_NAME", "caiodiasol$twitter_db"),
+            "USER": os.environ.get("DB_USER", "caiodiasol"),
+            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+            "HOST": os.environ.get("DB_HOST", "caiodiasol.mysql.pythonanywhere-services.com"),
+            "PORT": os.environ.get("DB_PORT", ""),
+        }
     }
-}
+else:
+    # Configuração para desenvolvimento local
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("POSTGRES_DB", "twitter_db"),
+            "USER": os.environ.get("POSTGRES_USER", "twitter_user"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "twitter_password"),
+            "HOST": os.environ.get("DB_HOST", "localhost"),
+            "PORT": os.environ.get("DB_PORT", "5432"),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -110,12 +131,23 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Configurações CORS
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
-
-CORS_ALLOW_CREDENTIALS = True
+if IS_PRODUCTION:
+    # CORS para produção - atualizar com URL da Vercel após deploy
+    CORS_ALLOWED_ORIGINS = [
+        f"https://{os.environ.get('PYTHONANYWHERE_DOMAIN', 'caiodiasol.pythonanywhere.com')}",
+        "https://seu-frontend.vercel.app",  # ← ATUALIZAR DEPOIS DO DEPLOY DA VERCEL
+        "http://localhost:3000",  # Para desenvolvimento local
+        "http://localhost:3001",
+    ]
+    CORS_ALLOW_CREDENTIALS = True
+else:
+    # CORS para desenvolvimento
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+    ]
+    CORS_ALLOW_CREDENTIALS = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -125,28 +157,32 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Media files configuration
+# Media files configuration (uploads de usuários)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 INTERNAL_IPS = ["127.0.0.1"]
 
+# Django REST Framework
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework_simplejwt.authentication.JWTAuthentication",  # Adicionando JWT
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
     ],
 }
 
+# Simple JWT
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -155,14 +191,31 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
+# Custom User Model
 AUTH_USER_MODEL = "users.User"
+
+# Logging para produção
+if IS_PRODUCTION:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file': {
+                'level': 'ERROR',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'django.log'),
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+        },
+    }
