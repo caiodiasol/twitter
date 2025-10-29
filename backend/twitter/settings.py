@@ -21,20 +21,14 @@ SECRET_KEY = os.environ.get(
     "django-insecure-ulv7qol-y9kl#y(y9@4g#zt$5jhjg9ti1l!)oc@$7c^%9am-77",
 )
 
-# Detectar se está em produção (PythonAnywhere)
-IS_PRODUCTION = "PYTHONANYWHERE_DOMAIN" in os.environ
+# Detectar se está em produção (Render)
+IS_RENDER = 'RENDER' in os.environ
 
-if IS_PRODUCTION:
+if IS_RENDER:
     DEBUG = False
     ALLOWED_HOSTS = [
-        os.environ.get(
-            "PYTHONANYWHERE_DOMAIN",
-            "caiodiasol.pythonanywhere.com",
-        ),
-        f"www.{os.environ.get(
-            'PYTHONANYWHERE_DOMAIN',
-            'caiodiasol.pythonanywhere.com',
-        )}",
+        os.environ.get('RENDER_EXTERNAL_HOSTNAME', ''),
+        'twitter-backend.onrender.com',  # URL que o Render vai gerar
     ]
 else:
     DEBUG = True
@@ -92,21 +86,17 @@ WSGI_APPLICATION = "twitter.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if IS_PRODUCTION:
+if IS_RENDER:
+    # Database do Render (usa DATABASE_URL automaticamente)
+    import dj_database_url
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("DB_NAME", "caiodiasol$twitter_db"),
-            "USER": os.environ.get("DB_USER", "caiodiasol"),
-            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-            "HOST": os.environ.get(
-                "DB_HOST",
-                "caiodiasol.mysql.pythonanywhere-services.com",
-            ),
-            "PORT": os.environ.get("DB_PORT", ""),
-        }
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600
+        )
     }
 else:
+    # Database local
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -140,18 +130,16 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Configurações CORS
-if IS_PRODUCTION:
+if IS_RENDER:
+    # CORS para Vercel (atualizar depois)
     CORS_ALLOWED_ORIGINS = [
-        f"https://{os.environ.get(
-            'PYTHONANYWHERE_DOMAIN',
-            'caiodiasol.pythonanywhere.com',
-        )}",
-        "https://seu-frontend.vercel.app",  # atualizar após deploy
+        f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME', '')}",
+        "https://seu-frontend.vercel.app",  # ← ATUALIZAR DEPOIS
         "http://localhost:3000",
-        "http://localhost:3001",
     ]
     CORS_ALLOW_CREDENTIALS = True
 else:
+    # CORS para desenvolvimento
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
@@ -200,23 +188,23 @@ SIMPLE_JWT = {
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
-# Logging
-if IS_PRODUCTION:
+# Logging para produção
+if IS_RENDER:
     LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "handlers": {
-            "file": {
-                "level": "ERROR",
-                "class": "logging.FileHandler",
-                "filename": os.path.join(BASE_DIR, "django.log"),
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file': {
+                'level': 'ERROR',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'django.log'),
             },
         },
-        "loggers": {
-            "django": {
-                "handlers": ["file"],
-                "level": "ERROR",
-                "propagate": True,
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'ERROR',
+                'propagate': True,
             },
         },
     }

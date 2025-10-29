@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: twitter-backend
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn twitter.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: RENDER
+        value: "True"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: twitter-db
+          property: connectionString
