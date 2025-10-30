@@ -3,9 +3,9 @@
   "name": "Twitter Clone",
   "icons": [
     {
-      "src": "favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
+      "src": "favicon.png",
+      "type": "image/png",
+      "sizes": "192x192 256x256 384x384 512x512"
     },
     {
       "src": "favicon.ico",
