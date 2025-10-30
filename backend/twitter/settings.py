@@ -193,8 +193,15 @@ MEDIA_URL = "/media/"
 # Com Cloudinary, MEDIA_ROOT não é utilizado.
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", BASE_DIR / "media")
 
-# Armazenamento de mídia via Cloudinary (URLs absolutas do CDN)
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+# Armazenamento de mídia via Cloudinary (Django 5 – STORAGES)
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 INTERNAL_IPS = ["127.0.0.1"]
 
