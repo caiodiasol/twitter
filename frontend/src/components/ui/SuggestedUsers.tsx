@@ -24,18 +24,39 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUserId }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchSuggestedUsers();
-    fetchFollowing();
-  }, []);
+    const init = async () => {
+      await fetchFollowing();
+      await fetchSuggestedUsers();
+    };
+    init();
+  }, [currentUserId]);
 
   const fetchSuggestedUsers = async (): Promise<void> => {
     try {
-      const response = await api.get('/users/');
+      // Buscar following no início para evitar race condition com o state
+      const followingResp = await api.get('/users/following/');
+      const followingList = Array.isArray(followingResp.data)
+        ? followingResp.data
+        : (followingResp.data?.results ?? []);
+      const currentFollowingIds = followingList.map(
+        (user: SuggestedUser) => user.id
+      );
+      // Também manter o estado alinhado
+      setFollowing(currentFollowingIds);
+
+      const usersResp = await api.get('/users/');
+      const users = Array.isArray(usersResp.data)
+        ? usersResp.data
+        : (usersResp.data?.results ?? []);
       // Filtrar o usuário atual e usuários já seguidos
-      const allUsers = response.data.filter(
+      const allUsers = users.filter(
         (user: SuggestedUser) => user.id !== currentUserId
       );
-      setSuggestedUsers(allUsers.slice(0, 5)); // Mostrar apenas 5 sugestões
+      setSuggestedUsers(
+        allUsers
+          .filter((u: SuggestedUser) => !currentFollowingIds.includes(u.id))
+          .slice(0, 5)
+      ); // Mostrar apenas 5 sugestões
     } catch (err) {
       console.error('Failed to fetch suggested users:', err);
     }
@@ -44,7 +65,10 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUserId }) => {
   const fetchFollowing = async (): Promise<void> => {
     try {
       const response = await api.get('/users/following/');
-      const followingIds = response.data.map((user: SuggestedUser) => user.id);
+      const list = Array.isArray(response.data)
+        ? response.data
+        : (response.data?.results ?? []);
+      const followingIds = list.map((user: SuggestedUser) => user.id);
       setFollowing(followingIds);
     } catch (err) {
       console.error('Failed to fetch following:', err);

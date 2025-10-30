@@ -29,10 +29,18 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onUserClick }) => {
   const fetchSuggestedUsers = async () => {
     try {
       setLoading(true);
+      // Obter 'following' mais recente para filtrar corretamente
+      const followingResp = await api.get('/users/following/');
+      const followingSet = new Set<number>(
+        followingResp.data.map((u: any) => u.id as number)
+      );
       const response = await api.get('/users/');
+      const users = Array.isArray(response.data)
+        ? response.data
+        : (response.data?.results ?? []);
       // Filtrar o usuário atual e usuários já seguidos
-      const filteredUsers = response.data.filter(
-        (user: any) => user.id !== currentUser?.id && !following.has(user.id)
+      const filteredUsers = users.filter(
+        (user: any) => user.id !== currentUser?.id && !followingSet.has(user.id)
       );
       // Pegar apenas os primeiros 5 usuários
       setSuggestedUsers(filteredUsers.slice(0, 5));
@@ -46,9 +54,12 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onUserClick }) => {
   const fetchNewUserToSuggest = async () => {
     try {
       const response = await api.get('/users/');
+      const users = Array.isArray(response.data)
+        ? response.data
+        : (response.data?.results ?? []);
       // Filtrar o usuário atual, usuários já seguidos e usuários já na lista de sugestões
       const currentSuggestionIds = new Set(suggestedUsers.map(user => user.id));
-      const filteredUsers = response.data.filter(
+      const filteredUsers = users.filter(
         (user: any) =>
           user.id !== currentUser?.id &&
           !following.has(user.id) &&
