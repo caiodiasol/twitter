@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "cloudinary",
+    "cloudinary_storage",
     "django_extensions",
     "rest_framework",
     "users",
@@ -187,7 +189,11 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# Se estiver usando Disk local, pode definir MEDIA_ROOT via ENV; com Cloudinary, não é usado
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT", BASE_DIR / "media")
+
+# Armazenamento de mídia via Cloudinary (URLs absolutas do CDN)
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 INTERNAL_IPS = ["127.0.0.1"]
 
