@@ -8,3 +8,5 @@ whitenoise==6.11.0
 gunicorn==23.0.0
 dj-database-url==2.1.0
 django-extensions==3.2.3
+cloudinary==1.41.0
+django-cloudinary-storage==0.3.0
