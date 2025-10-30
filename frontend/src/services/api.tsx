@@ -10,11 +10,11 @@ const API_BASE_URL =
     ? 'https://twitter-backend-2hy7.onrender.com/api' // produção no Render
     : 'http://localhost:8001/api';
 
+// Não force Content-Type globalmente; deixe o Axios definir automaticamente:
+// - application/json para objetos
+// - multipart/form-data com boundary para FormData
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // Interceptor para adicionar token JWT
