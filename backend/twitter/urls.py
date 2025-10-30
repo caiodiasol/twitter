@@ -18,10 +18,25 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+def api_status(request):
+    """Página de status da API"""
+    return JsonResponse({
+        "status": "ok",
+        "message": "Twitter API is running!",
+        "endpoints": {
+            "users": "/api/users/",
+            "tweets": "/api/tweets/",
+            "token": "/api/token/",
+            "admin": "/admin/"
+        }
+    })
+
 urlpatterns = [
+    path("", api_status, name="api_status"),
     path("admin/", admin.site.urls),
     path("api/", include("tweets.urls")),
     path("api/users/", include("users.urls")),
