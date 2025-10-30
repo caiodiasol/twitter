@@ -22,18 +22,22 @@ from django.http import JsonResponse
 from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+
 def api_status(request):
     """Página de status da API"""
-    return JsonResponse({
-        "status": "ok",
-        "message": "Twitter API is running!",
-        "endpoints": {
-            "users": "/api/users/",
-            "tweets": "/api/tweets/",
-            "token": "/api/token/",
-            "admin": "/admin/"
+    return JsonResponse(
+        {
+            "status": "ok",
+            "message": "Twitter API is running!",
+            "endpoints": {
+                "users": "/api/users/",
+                "tweets": "/api/tweets/",
+                "token": "/api/token/",
+                "admin": "/admin/",
+            },
         }
-    })
+    )
+
 
 urlpatterns = [
     path("", api_status, name="api_status"),
