@@ -130,11 +130,8 @@ const Profile: React.FC = () => {
         formDataToSend.append('avatar', avatarInput.files[0]);
       }
 
-      const response = await api.put('/users/update_profile/', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // Não force o Content-Type; deixe o browser definir o boundary do multipart
+      const response = await api.put('/users/update_profile/', formDataToSend);
 
       setProfile(response.data);
       updateUser(response.data);
