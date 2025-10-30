@@ -60,7 +60,7 @@ const Tweet: React.FC<TweetProps> = ({
             {getAvatarUrl(author?.avatar) ? (
               <img
                 src={getAvatarUrl(author?.avatar)!}
-                alt="Avatar"
+                alt={author?.username || 'Usuário'}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -94,7 +94,7 @@ const Tweet: React.FC<TweetProps> = ({
             <div className="mt-3">
               <img
                 src={getAvatarUrl(image) || image}
-                alt="Tweet image"
+                alt="Conteúdo do tweet"
                 className="w-full max-w-md rounded-lg object-cover"
               />
             </div>

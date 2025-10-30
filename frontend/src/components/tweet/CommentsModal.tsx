@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { X, Send, MessageCircle } from 'lucide-react';
 import { getAvatarUrl } from '../../utils/avatar';

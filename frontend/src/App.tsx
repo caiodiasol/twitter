@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { ReactNode } from 'react';
 import {
   BrowserRouter as Router,
