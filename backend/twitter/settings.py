@@ -132,8 +132,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Configurações CORS
 if IS_RENDER:
-    # CORS para produção - permitir todas as origens temporariamente para debug
-    CORS_ALLOW_ALL_ORIGINS = True
+    # CORS para produção - permitir somente o domínio do frontend (Vercel)
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = [
+        "https://twitter-sage-two.vercel.app",
+    ]
     CORS_ALLOW_CREDENTIALS = True
 
     # Headers adicionais para CORS
