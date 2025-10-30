@@ -30,7 +30,12 @@ class UserSerializer(serializers.ModelSerializer):
         return UserFollowing.objects.filter(user=obj).count()
 
     def get_tweets_count(self, obj):
-        return obj.tweets.count()
+        try:
+            return obj.tweets.count()
+        except Exception as e:
+            # Log do erro para debug
+            print(f"Error in get_tweets_count: {e}")
+            return 0
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
