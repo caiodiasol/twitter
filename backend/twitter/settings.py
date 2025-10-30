@@ -158,7 +158,7 @@ if IS_RENDER:
         "POST",
         "PUT",
     ]
-    
+
     # Configurações adicionais para CORS
     CORS_PREFLIGHT_MAX_AGE = 86400
     CORS_ALLOW_CREDENTIALS = True
