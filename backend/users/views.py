@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -49,7 +50,11 @@ class UserViewSet(ModelViewSet):
             return Response(serializer.data)
         return Response({"error": "Not authenticated"}, status=401)
 
-    @action(detail=False, methods=["put", "patch"])
+    @action(
+        detail=False,
+        methods=["put", "patch"],
+        parser_classes=[MultiPartParser, FormParser],
+    )
     def update_profile(self, request):
         serializer = UserSerializer(request.user, data=request.data, partial=True)
         if serializer.is_valid():
