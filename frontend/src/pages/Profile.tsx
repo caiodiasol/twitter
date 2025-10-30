@@ -138,6 +138,9 @@ const Profile: React.FC = () => {
 
       setProfile(response.data);
       updateUser(response.data);
+      if (response.data?.avatar) {
+        setAvatarPreview(getAvatarUrl(response.data.avatar) || '');
+      }
       setSuccess('Perfil atualizado com sucesso!');
     } catch (err: any) {
       if (err.response?.data) {

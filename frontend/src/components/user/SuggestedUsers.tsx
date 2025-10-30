@@ -18,9 +18,13 @@ const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onUserClick }) => {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    fetchSuggestedUsers();
-    fetchFollowing();
-  }, []);
+    const init = async () => {
+      await fetchFollowing();
+      await fetchSuggestedUsers();
+    };
+    init();
+    // reavaliar quando o usuário atual mudar
+  }, [currentUser?.id]);
 
   const fetchSuggestedUsers = async () => {
     try {
