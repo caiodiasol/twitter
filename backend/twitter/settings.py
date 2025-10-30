@@ -189,7 +189,8 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files
 MEDIA_URL = "/media/"
-# Se estiver usando Disk local, pode definir MEDIA_ROOT via ENV; com Cloudinary, não é usado
+# Se usar Disk local, defina MEDIA_ROOT via ENV.
+# Com Cloudinary, MEDIA_ROOT não é utilizado.
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", BASE_DIR / "media")
 
 # Armazenamento de mídia via Cloudinary (URLs absolutas do CDN)
