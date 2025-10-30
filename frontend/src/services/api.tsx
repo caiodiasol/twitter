@@ -7,7 +7,7 @@ import axios, {
 
 const API_BASE_URL =
   process.env.NODE_ENV === 'production'
-    ? 'https://twitter-backend.onrender.com/api' // ← URL do Render
+    ? 'https://twitter-backend-2hy7.onrender.com/api' // produção no Render
     : 'http://localhost:8001/api';
 
 const api: AxiosInstance = axios.create({
@@ -44,7 +44,7 @@ api.interceptors.response.use(
       if (refreshToken) {
         try {
           const response = await axios.post(
-            `${API_BASE_URL}/users/token/refresh/`,
+            `${API_BASE_URL}/token/refresh/`,
             {
               refresh: refreshToken,
             }
