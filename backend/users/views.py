@@ -1,5 +1,5 @@
 import logging
-from django.db import transaction, connection
+from django.db import transaction
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -33,30 +33,39 @@ class UserViewSet(ModelViewSet):
         serializer = UserCreateSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                user = None
                 # Usar transaction.atomic() para garantir commit
+                # Django gerencia o commit automaticamente em blocos atômicos
                 with transaction.atomic():
                     logger.info("Creating user in database...")
                     user = serializer.save()
                     logger.info(
-                        f"User created with id: {user.id}, username: {user.username}"
+                        f"User created with id: {user.id}, "
+                        f"username: {user.username}"
                     )
 
-                    # Forçar commit explícito
-                    connection.commit()
-                    logger.info("Explicit commit executed")
+                    # Forçar refresh do banco para garantir que foi salvo
+                    user.refresh_from_db()
+                    logger.info(
+                        f"User refreshed from DB: id={user.id}, "
+                        f"username={user.username}"
+                    )
+
+                    # Verificar se realmente foi salvo
+                    user_exists = User.objects.filter(id=user.id).exists()
+                    logger.info(f"User exists check: {user_exists}")
 
                 # Verificar APÓS a transação se o usuário foi salvo
+                # (fora do bloco atômico para garantir que commit foi feito)
                 user_refresh = User.objects.filter(id=user.id).first()
                 if not user_refresh:
-                    logger.error(f"User {user.id} was not saved to database!")
+                    logger.error(f"User {user.id} was not found after transaction!")
                     return Response(
                         {"error": "Failed to save user to database"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     )
 
                 logger.info(
-                    f"User verified in DB: id={user_refresh.id}, "
+                    f"User verified in DB after transaction: id={user_refresh.id}, "
                     f"username={user_refresh.username}"
                 )
 
@@ -67,8 +76,7 @@ class UserViewSet(ModelViewSet):
                 access_token = refresh.access_token
 
                 logger.info(
-                    f"Registration successful for user: "
-                    f"{user_refresh.username}"
+                    f"Registration successful for user: " f"{user_refresh.username}"
                 )
 
                 return Response(
