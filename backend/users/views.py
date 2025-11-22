@@ -56,7 +56,8 @@ class UserViewSet(ModelViewSet):
                     )
 
                 logger.info(
-                    f"User verified in DB: id={user_refresh.id}, username={user_refresh.username}"
+                    f"User verified in DB: id={user_refresh.id}, "
+                    f"username={user_refresh.username}"
                 )
 
                 # Gerar tokens JWT após criar o usuário
