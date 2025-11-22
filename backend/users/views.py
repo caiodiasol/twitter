@@ -1,5 +1,5 @@
 import logging
-from django.db import transaction
+from django.db import transaction, connection
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -33,6 +33,7 @@ class UserViewSet(ModelViewSet):
         serializer = UserCreateSerializer(data=request.data)
         if serializer.is_valid():
             try:
+                user = None
                 # Usar transaction.atomic() para garantir commit
                 with transaction.atomic():
                     logger.info("Creating user in database...")
@@ -41,37 +42,42 @@ class UserViewSet(ModelViewSet):
                         f"User created with id: {user.id}, username: {user.username}"
                     )
 
-                    # Forçar refresh do banco para garantir que foi salvo
-                    user.refresh_from_db()
-                    user_exists = User.objects.filter(id=user.id).exists()
-                    logger.info(
-                        f"User refreshed from DB: id={user.id}, exists={user_exists}"
-                    )
+                    # Forçar commit explícito
+                    connection.commit()
+                    logger.info("Explicit commit executed")
 
-                    # Verificar se realmente foi salvo
-                    if not User.objects.filter(id=user.id).exists():
-                        logger.error(f"User {user.id} was not saved to database!")
-                        return Response(
-                            {"error": "Failed to save user to database"},
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        )
-
-                    # Gerar tokens JWT após criar o usuário
-                    from rest_framework_simplejwt.tokens import RefreshToken
-
-                    refresh = RefreshToken.for_user(user)
-                    access_token = refresh.access_token
-
-                    logger.info(f"Registration successful for user: {user.username}")
-
+                # Verificar APÓS a transação se o usuário foi salvo
+                user_refresh = User.objects.filter(id=user.id).first()
+                if not user_refresh:
+                    logger.error(f"User {user.id} was not saved to database!")
                     return Response(
-                        {
-                            "user": UserSerializer(user).data,
-                            "access": str(access_token),
-                            "refresh": str(refresh),
-                        },
-                        status=status.HTTP_201_CREATED,
+                        {"error": "Failed to save user to database"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     )
+
+                logger.info(
+                    f"User verified in DB: id={user_refresh.id}, username={user_refresh.username}"
+                )
+
+                # Gerar tokens JWT após criar o usuário
+                from rest_framework_simplejwt.tokens import RefreshToken
+
+                refresh = RefreshToken.for_user(user_refresh)
+                access_token = refresh.access_token
+
+                logger.info(
+                    f"Registration successful for user: "
+                    f"{user_refresh.username}"
+                )
+
+                return Response(
+                    {
+                        "user": UserSerializer(user_refresh).data,
+                        "access": str(access_token),
+                        "refresh": str(refresh),
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
             except Exception as e:
                 logger.error(f"Error creating user: {e}", exc_info=True)
                 return Response(
