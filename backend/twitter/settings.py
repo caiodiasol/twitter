@@ -31,7 +31,7 @@ if IS_RENDER:
         "twitter-backend.onrender.com",  # URL que o Render vai gerar
     ]
 else:
-DEBUG = True
+    DEBUG = True
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 # Application definition
@@ -93,7 +93,7 @@ if IS_RENDER:
     # Database do Render (usa DATABASE_URL automaticamente)
     import dj_database_url
 
-DATABASES = {
+    DATABASES = {
         "default": dj_database_url.config(
             default=os.environ.get("DATABASE_URL"), conn_max_age=600
         )
