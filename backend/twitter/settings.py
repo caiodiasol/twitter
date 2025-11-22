@@ -194,14 +194,51 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", BASE_DIR / "media")
 
 # Armazenamento de mídia via Cloudinary (Django 5 – STORAGES)
-STORAGES = {
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+# Configuração do Cloudinary
+if IS_RENDER:
+    # Usar Cloudinary apenas se as credenciais estiverem configuradas
+    if os.environ.get("CLOUDINARY_URL") or (
+        os.environ.get("CLOUDINARY_CLOUD_NAME")
+        and os.environ.get("CLOUDINARY_API_KEY")
+        and os.environ.get("CLOUDINARY_API_SECRET")
+    ):
+        CLOUDINARY_STORAGE = {
+            "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
+            "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+            "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
+        }
+        STORAGES = {
+            "default": {
+                "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+            },
+            "staticfiles": {
+                "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            },
+        }
+    else:
+        # Fallback para armazenamento local se Cloudinary não estiver configurado
+        MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+        MEDIA_URL = "/media/"
+        STORAGES = {
+            "default": {
+                "BACKEND": "django.core.files.storage.FileSystemStorage",
+            },
+            "staticfiles": {
+                "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            },
+        }
+else:
+    # Desenvolvimento local - usar armazenamento local
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+    MEDIA_URL = "/media/"
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 INTERNAL_IPS = ["127.0.0.1"]
 
