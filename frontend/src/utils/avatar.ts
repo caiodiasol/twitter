@@ -5,7 +5,7 @@
  */
 const BACKEND_BASE =
   process.env.NODE_ENV === 'production'
-    ? 'https://twitter-backend-2hy7.onrender.com'
+    ? 'https://twitter-backend-i09m.onrender.com'
     : 'http://localhost:8001';
 
 export const getAvatarUrl = (
