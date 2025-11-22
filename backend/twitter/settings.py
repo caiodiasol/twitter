@@ -31,7 +31,7 @@ if IS_RENDER:
         "twitter-backend.onrender.com",  # URL que o Render vai gerar
     ]
 else:
-    DEBUG = True
+DEBUG = True
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 # Application definition
@@ -93,7 +93,7 @@ if IS_RENDER:
     # Database do Render (usa DATABASE_URL automaticamente)
     import dj_database_url
 
-    DATABASES = {
+DATABASES = {
         "default": dj_database_url.config(
             default=os.environ.get("DATABASE_URL"), conn_max_age=600
         )
@@ -108,8 +108,8 @@ else:
             "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "twitter_password"),
             "HOST": os.environ.get("DB_HOST", "localhost"),
             "PORT": os.environ.get("DB_PORT", "5432"),
-        }
     }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -169,12 +169,12 @@ if IS_RENDER:
     CORS_ALLOW_CREDENTIALS = True
 else:
     # CORS para desenvolvimento
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
         "http://localhost:3001",
-    ]
-    CORS_ALLOW_CREDENTIALS = True
+]
+CORS_ALLOW_CREDENTIALS = True
 
 # Internationalization
 LANGUAGE_CODE = "en-us"
@@ -213,7 +213,7 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.AllowAny",  
     ],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
@@ -241,17 +241,33 @@ if IS_RENDER:
         "version": 1,
         "disable_existing_loggers": False,
         "handlers": {
+            "console": {
+                "level": "INFO",
+                "class": "logging.StreamHandler",
+                "formatter": "verbose",
+            },
             "file": {
                 "level": "ERROR",
                 "class": "logging.FileHandler",
                 "filename": os.path.join(BASE_DIR, "django.log"),
             },
         },
+        "formatters": {
+            "verbose": {
+                "format": "[{levelname}] {asctime} {module} {message}",
+                "style": "{",
+            },
+        },
         "loggers": {
             "django": {
-                "handlers": ["file"],
+                "handlers": ["console", "file"],
                 "level": "ERROR",
                 "propagate": True,
+            },
+            "users": {
+                "handlers": ["console", "file"],
+                "level": "INFO",
+                "propagate": False,
             },
         },
     }
